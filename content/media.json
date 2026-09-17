@@ -1,0 +1,32 @@
+{
+  "assets": [
+    {
+      "id": "hero",
+      "webm": "/media/hero.webm",
+      "mp4": "/media/hero.mp4",
+      "poster": "/media/hero-poster.jpg",
+      "alt": "Overhead view of a real production line running, fabric moving through rollers"
+    },
+    {
+      "id": "sensors",
+      "webm": "/media/mechanism.webm",
+      "mp4": "/media/mechanism.mp4",
+      "poster": "/media/mechanism-poster.jpg",
+      "alt": "Close detail of a rotating mechanical wheel and belt in motion"
+    },
+    {
+      "id": "installation",
+      "webm": "/media/repair.webm",
+      "mp4": "/media/repair.mp4",
+      "poster": "/media/repair-poster.jpg",
+      "alt": "Hands applying grease to a screw during routine maintenance"
+    },
+    {
+      "id": "closing",
+      "webm": "/media/plant.webm",
+      "mp4": "/media/plant.mp4",
+      "poster": "/media/plant-poster.jpg",
+      "alt": "Aerial view of an industrial production facility"
+    }
+  ]
+}

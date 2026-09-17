@@ -1,36 +1,108 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# RASD · رَصْد
 
-## Getting Started
-
-First, run the development server:
+Bilingual (Arabic-first) landing page for a low-cost predictive-maintenance
+system. Next.js 16 (App Router), Tailwind CSS 4, GSAP, Lenis.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+npm run dev        # http://localhost:3000 → redirects to /ar
+npm run build && npm start
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Where things live
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+| To change… | Edit |
+| --- | --- |
+| Any text, in either language | `content/ar.json`, `content/en.json` |
+| The product name, site URL, contact details, default language | `content/site.config.ts` |
+| Where content comes from (JSON today, an API later) | `lib/data/endpoints.ts` — see [`lib/data/README.md`](lib/data/README.md) |
+| Video footage | `content/media.json` + files in `public/media/` |
+| Colours, type scale, spacing | the tokens at the top of `app/globals.css` |
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Components never import JSON or call `fetch`; they go through the getters in
+`lib/data/index.ts`. A section whose content is missing renders nothing.
 
-## Learn More
+### Footage
 
-To learn more about Next.js, take a look at the following resources:
+There are four slots — `hero`, `sensors`, `installation`, `closing`. Until a
+slot has an entry, its section shows only its drawings. To add a clip, put the
+files in `public/media/` and list them:
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```json
+{
+  "assets": [
+    {
+      "id": "hero",
+      "webm": "/media/hero.webm",
+      "mp4": "/media/hero.mp4",
+      "poster": "/media/hero.jpg",
+      "alt": "Sensor clamped to a motor housing on a production line"
+    }
+  ]
+}
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Clips play muted, only while on screen, and never under reduced motion.
 
-## Deploy on Vercel
+## Design rules worth keeping
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- **Two grounds, one signal.** Graphite `#10171A` and datasheet paper `#EAEDEC`;
+  paper carries 58–65% of the page at every width. `data-ground="deep"` on any
+  element flips its colour roles.
+- **Amber `#E9A23B` has exactly two forms.** A solid fill on the primary call to
+  action, and a stroke on a trace that has left its band. Nothing else — not
+  focus rings, errors, callouts or links.
+- **One signal runs the whole page.** Every trace is a window onto the same
+  function in `lib/trace.ts`, so sections join up. On desktop it runs down a
+  gutter; on phones it becomes a strip under each heading. In Arabic, time runs
+  right to left.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Motion and access
+
+- Without JavaScript, or with reduced motion, every section renders its final
+  state: the scroll-scrubbed timeline becomes four static stages and the hero
+  trace stands still.
+- The hero trace moves continuously, so it has a run/hold switch (WCAG 2.2.2).
+- The contact form is a Server Action and works with JavaScript off.
+
+## Checks
+
+```bash
+npm run typecheck
+npm run lint
+npm run shots      # needs `npm run dev` running; writes .screenshots/
+```
+
+`npm run shots` captures both languages at 360–1920px and reports how much of
+the page sits on each ground. On Windows without Playwright's own browser,
+run it with `PW_CHANNEL=msedge`.
+
+## Deploying
+
+Set `SITE_URL` (e.g. `https://rasd.example`) so canonical links, hreflang and
+the sitemap use the real domain. On Vercel the production URL is picked up
+automatically until then.
+
+Two Next.js experimental flags are on, deliberately (`next.config.ts`):
+`globalNotFound` (the 404 page — the root layout sits under `[locale]`, which
+plain `not-found` can't serve) and `inlineCss` (the stylesheet is a few KB, so
+it ships inside the HTML).
+
+## Before this goes public
+
+- **The contact form does not send anything yet.** It validates and shows a
+  success message, but `endpoints.contactForm` is empty, so requests go nowhere.
+  Connect it (see `lib/data/README.md`) before launch.
+- `CONTACT_EMAIL` and `CONTACT_PHONE` in `content/site.config.ts` are
+  placeholders.
+- No footage has been produced yet (see *Footage*).
+
+---
+
+## تعديل المحتوى
+
+- كل النصوص في `content/ar.json` و `content/en.json`.
+- اسم المنتج، رابط الموقع، بيانات التواصل، واللغة الافتراضية في
+  `content/site.config.ts`.
+- لتوصيل خادم خلفي راجع [`lib/data/README.md`](lib/data/README.md).
+- **نموذج التواصل لا يرسل شيئًا بعد**؛ يجب توصيله قبل نشر الموقع.

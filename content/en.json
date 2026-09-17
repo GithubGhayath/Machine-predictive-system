@@ -1,0 +1,224 @@
+{
+  "nav": {
+    "links": [
+      {
+        "label": "How it works",
+        "href": "#warning-window"
+      },
+      {
+        "label": "What we measure",
+        "href": "#sensors"
+      },
+      {
+        "label": "The baseline",
+        "href": "#baseline"
+      },
+      {
+        "label": "Installation",
+        "href": "#installation"
+      },
+      {
+        "label": "Contact",
+        "href": "#contact"
+      }
+    ],
+    "languageLabel": "العربية",
+    "skipToContent": "Skip to content"
+  },
+  "preloader": {
+    "loading": "Loading."
+  },
+  "hero": {
+    "headline": "The machine warns you before it stops.",
+    "subline": "A monitoring system that learns the normal pulse of each machine on your line, then tells you when it changes — before the change becomes a stoppage.",
+    "primaryCta": {
+      "label": "Request a pilot installation",
+      "href": "#contact"
+    },
+    "secondaryCta": {
+      "label": "How it works",
+      "href": "#warning-window"
+    },
+    "liveControl": {
+      "running": "Live",
+      "held": "Held",
+      "pause": "Pause the moving trace",
+      "resume": "Resume the moving trace"
+    }
+  },
+  "cost": {
+    "id": "cost",
+    "heading": "A sudden failure costs more than the part.",
+    "body": "When a machine stops without warning, the whole shift stops with it. You pay idle labour, emergency freight on a part you could have ordered calmly, and a penalty on a late order. An emergency repair costs several times what the same repair costs when it is planned — and the only difference between the two is knowing early."
+  },
+  "warningWindow": {
+    "stages": [
+      {
+        "id": "day-zero",
+        "title": "Day zero — nothing unusual",
+        "body": "The machine runs inside its usual range. The system records and learns.",
+        "deviation": 0,
+        "ground": "paper"
+      },
+      {
+        "id": "first-drift",
+        "title": "First drift — nobody can hear it yet",
+        "body": "A hairline flaw in a bearing race begins to change the vibration signature. No heat, no noise, nothing a walk-around inspection would catch.",
+        "deviation": 0.4,
+        "ground": "paper"
+      },
+      {
+        "id": "confirmed",
+        "title": "The drift confirms — the alert goes out",
+        "body": "Vibration leaves the normal band repeatedly, and temperature begins to follow. When two indicators move together, the system sends an alert to the supervisor's phone.",
+        "deviation": 1,
+        "ground": "deep"
+      },
+      {
+        "id": "never-happened",
+        "title": "The stoppage that never happened",
+        "body": "The bearing was replaced during scheduled downtime. No lost shift, no emergency freight. That distance — between the first signal and the stop — is what this system sells.",
+        "deviation": 0.12,
+        "ground": "paper"
+      }
+    ],
+    "closing": "In reliability engineering this distance is called the P‑F interval. Its length varies by fault, machine and measurement method — from days to months."
+  },
+  "sensors": [
+    {
+      "id": "vibration",
+      "name": "Vibration",
+      "body": "The most important early channel. A change in the vibration signature comes long before heat or audible noise, because a fault begins mechanically before it begins generating heat."
+    },
+    {
+      "id": "temperature",
+      "name": "Temperature",
+      "body": "A confirming indicator, not an early one. Friction from a fault generates heat, but only once the fault has developed. Its real value is raising confidence when it rises alongside vibration."
+    },
+    {
+      "id": "current",
+      "name": "Electrical current",
+      "body": "Catches what vibration cannot: electrical faults inside the motor itself. Each fault type shows up first in a different channel — which is why we measure all three."
+    }
+  ],
+  "baseline": {
+    "heading": "There is no single \"normal reading\" for all machines.",
+    "body": "Two machines of the same model, in the same plant, have different signatures — depending on mounting, foundation, load and age. So the system doesn't start from a generic threshold. It spends two to three weeks recording your machine while it is healthy, and builds that machine's own normal range from it. After that, every reading is measured against the machine itself, not against a general table.",
+    "callout": "One non-negotiable condition: the machine must be verified healthy before recording begins. A machine with an existing fault during baseline teaches the system that the fault is normal — an error that silently invalidates everything after it.",
+    "machineLabels": [
+      "Machine A",
+      "Machine B"
+    ]
+  },
+  "deliverables": [
+    {
+      "id": "alert",
+      "title": "An alert on the phone",
+      "body": "A direct message to the supervisor's phone naming the machine, which indicator drifted, and for how long — not a dashboard someone has to open to discover the problem."
+    },
+    {
+      "id": "record",
+      "title": "A record that accumulates",
+      "body": "Every reading is stored. After months you have a real history of each machine's behaviour — the foundation any later improvement in accuracy is built on."
+    },
+    {
+      "id": "install",
+      "title": "Installation without modifying the machine",
+      "body": "Sensors mount externally. No cut wiring, no opened housings, no production stoppage during installation."
+    }
+  ],
+  "limits": {
+    "heading": "What this system does not do.",
+    "body": "No predictive-maintenance system anywhere is 100% accurate — not this one, and not the ones sold for tens of thousands. The reason is mathematical, not commercial: any system with a decision threshold faces an unavoidable trade-off between false alarms and missed faults, and tightening one loosens the other. What we commit to instead of an impossible promise: telling you plainly, before any contract, what this system can and cannot detect on your specific machine, and what warning window to expect from it.",
+    "diagram": {
+      "healthy": "Healthy",
+      "faulty": "Faulty",
+      "falseAlarms": "False alarms",
+      "missedFaults": "Missed faults",
+      "threshold": "Decision threshold"
+    }
+  },
+  "installation": [
+    {
+      "step": 1,
+      "title": "Visit and assess",
+      "body": "We inspect the line, identify the machines whose stoppage costs most, and agree on mounting points."
+    },
+    {
+      "step": 2,
+      "title": "Mount the sensors",
+      "body": "External installation on the selected machines, during a short pause or with no stoppage at all depending on the case."
+    },
+    {
+      "step": 3,
+      "title": "Build the baseline",
+      "body": "Two to three weeks of continuous recording, during which the machine runs as usual."
+    },
+    {
+      "step": 4,
+      "title": "Switch on alerting",
+      "body": "The system begins comparing and alerting, and we review the first month with you to tune sensitivity."
+    }
+  ],
+  "closing": {
+    "heading": "Start with one machine.",
+    "body": "Pick the machine whose stoppage costs you most. Put the system on it. Judge us after three months.",
+    "cta": {
+      "label": "Request a pilot installation",
+      "href": "#contact"
+    }
+  },
+  "contact": {
+    "heading": "Request a pilot installation",
+    "fields": [
+      {
+        "name": "name",
+        "label": "Name",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "company",
+        "label": "Factory or company",
+        "type": "text",
+        "required": true
+      },
+      {
+        "name": "phone",
+        "label": "Phone",
+        "type": "tel",
+        "required": true
+      },
+      {
+        "name": "machineType",
+        "label": "Machine type",
+        "type": "text",
+        "required": false
+      },
+      {
+        "name": "message",
+        "label": "Message",
+        "type": "textarea",
+        "required": false
+      }
+    ],
+    "submitLabel": "Send request",
+    "pendingLabel": "Sending…",
+    "successMessage": "Your request has reached us. We will be in touch shortly.",
+    "errorMessage": "The request could not be sent. Please check the required fields.",
+    "fieldMessages": {
+      "required": "This field is required.",
+      "invalid": "Please check this field."
+    }
+  },
+  "footer": {
+    "description": "A low-cost monitoring system that detects a change in a machine's condition before it stops.",
+    "contactLabel": "Contact",
+    "copyright": "All rights reserved."
+  },
+  "notFound": {
+    "heading": "This page does not exist.",
+    "body": "The address may have changed, or been mistyped.",
+    "homeLabel": "Back to the home page"
+  }
+}

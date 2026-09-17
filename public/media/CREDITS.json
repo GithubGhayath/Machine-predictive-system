@@ -1,0 +1,97 @@
+{
+  "source": "Pexels (https://www.pexels.com) — free for commercial use, attribution not required by license but credited here as good practice",
+  "assets": [
+    {
+      "local": "public/media/hero.mp4",
+      "type": "video",
+      "pexels_id": 32268481,
+      "photographer": "Usman AbdulrasheedGambo",
+      "photographer_url": "https://www.pexels.com/@theonlyabdulla",
+      "source_url": "https://www.pexels.com/video/industrial-fabric-production-process-from-above-32268481/",
+      "note": "Trimmed from 18s to the first 9.5s (calm, static, no people) per approved direction."
+    },
+    {
+      "local": "public/media/mechanism.mp4",
+      "type": "video",
+      "pexels_id": 8321907,
+      "photographer": "Tima Miroshnichenko",
+      "photographer_url": "https://www.pexels.com/@tima-miroshnichenko",
+      "source_url": "https://www.pexels.com/video/close-up-of-a-person-using-a-lathe-machine-8321907/"
+    },
+    {
+      "local": "public/media/alert.mp4",
+      "type": "video",
+      "pexels_id": 6611941,
+      "photographer": "Tima Miroshnichenko",
+      "photographer_url": "https://www.pexels.com/@tima-miroshnichenko",
+      "source_url": "https://www.pexels.com/video/person-holding-a-smartphone-6611941/"
+    },
+    {
+      "local": "public/media/repair.mp4",
+      "type": "video",
+      "pexels_id": 6046355,
+      "photographer": "K",
+      "photographer_url": "https://www.pexels.com/@kelly",
+      "source_url": "https://www.pexels.com/video/putting-grease-on-a-screw-6046355/",
+      "note": "DEVIATION: replaces the originally-approved 32329420. That clip's face was prominent throughout (40-50% of frame height, automotive-garage setting) once viewed in full — the single Pexels preview frame shown for approval had understated this. Re-searched per the user's own fallback instruction; this clip is hands-only with no face visible at any point, but is warm workshop light rather than the originally-specified bright daylight."
+    },
+    {
+      "local": "public/media/plant.mp4",
+      "type": "video",
+      "pexels_id": 38522698,
+      "photographer": "Toàn BDS",
+      "photographer_url": "https://www.pexels.com/@toanbds668",
+      "source_url": "https://www.pexels.com/video/aerial-view-of-industrial-complex-with-solar-panels-38522698/"
+    },
+    {
+      "local": "public/images/factory-wide.webp",
+      "type": "image",
+      "pexels_id": 5878445,
+      "photographer": "Mark Stebnicki",
+      "photographer_url": "https://www.pexels.com/@nc-farm-bureau-mark",
+      "source_url": "https://www.pexels.com/photo/wide-angle-shot-of-an-industrial-interior-5878445/"
+    },
+    {
+      "local": "public/images/gears-macro.webp",
+      "type": "image",
+      "pexels_id": 7568428,
+      "photographer": "cottonbro studio",
+      "photographer_url": "https://www.pexels.com/@cottonbro",
+      "source_url": "https://www.pexels.com/photo/close-up-view-of-auto-mechanical-gears-7568428/",
+      "note": "Source title says 'auto mechanical gears' — an automotive gearbox. Kept because the crop shows only generic oiled steel gear teeth with no car-identifying context, unlike the rejected VID-04 candidate."
+    },
+    {
+      "local": "public/images/motor.webp",
+      "type": "image",
+      "pexels_id": 34194564,
+      "photographer": "Freek Wolsink",
+      "photographer_url": "https://www.pexels.com/@freek-wolsink-508219",
+      "source_url": "https://www.pexels.com/photo/industrial-motor-on-wooden-surface-in-workshop-34194564/",
+      "note": "DEVIATION (approved): brief specified 'warm metal' housing; this motor has a white housing. Approved as supporting imagery since the temperature section's primary visual is a code-drawn diagram."
+    },
+    {
+      "local": "public/images/control-panel.webp",
+      "type": "image",
+      "pexels_id": 34194580,
+      "photographer": "Freek Wolsink",
+      "photographer_url": "https://www.pexels.com/@freek-wolsink-508219",
+      "source_url": "https://www.pexels.com/photo/industrial-control-panel-with-safety-features-34194580/"
+    },
+    {
+      "local": "public/images/hands-machine.webp",
+      "type": "image",
+      "pexels_id": 6520215,
+      "photographer": "RDNE Stock project",
+      "photographer_url": "https://www.pexels.com/@rdne",
+      "source_url": "https://www.pexels.com/photo/person-pressing-switches-6520215/"
+    },
+    {
+      "local": "public/images/quiet-floor.webp",
+      "type": "image",
+      "pexels_id": 36217325,
+      "photographer": "Craftsman Concrete Floors",
+      "photographer_url": "https://www.pexels.com/@craftsman-concrete-floors-2159674718",
+      "source_url": "https://www.pexels.com/photo/spacious-modern-warehouse-interior-in-texas-36217325/"
+    }
+  ]
+}

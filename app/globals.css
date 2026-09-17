@@ -1,26 +1,615 @@
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
+
+/* ============================================================================
+   RASD — design tokens
+
+   GOVERNING RULE
+   Nothing on this page is coloured until something is wrong. The site is two
+   grounds — graphite and datasheet paper — plus one signal colour that appears
+   only where a reading leaves its learned band.
+
+   THE AMBER RULE (do not break this)
+   Signal amber appears in exactly two forms, and they must stay structurally
+   distinct so the colour keeps its meaning:
+     · AREA  — a solid filled rectangle. Primary CTA only.
+     · LINE  — a 2px stroke on transparent. Out-of-band trace only.
+   A trace never receives a fill. A button never receives a stroke-only amber
+   treatment. Focus rings, selection, form errors and callouts never use it.
+   If those forms ever blur, the whole idea collapses.
+
+   LAYERS
+   Everything below lives in `base` or `components`, so Tailwind utilities in
+   markup always win. Unlayered CSS would silently beat them.
+   ============================================================================ */
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  /* ---- primitives ---- */
+  --deep: #10171a; /* cold graphite, faint blue-green cast */
+  --paper: #eaedec; /* cool datasheet paper — never cream */
+  --steel: #58676e; /* mid tone, legible on both grounds */
+  --signal: #e9a23b; /* warning-lamp amber */
+
+  --deep-raised: #182126;
+  --paper-sunk: #dfe3e2;
+
+  /* ---- mapped roles · default ground is paper ---- */
+  --ground: var(--paper);
+  --ground-raised: var(--paper-sunk);
+  --fg: var(--deep);
+  --fg-muted: var(--steel);
+  --rule: color-mix(in srgb, var(--steel) 28%, transparent);
+  --corridor: color-mix(in srgb, var(--steel) 16%, transparent);
+  --trace: color-mix(in srgb, var(--deep) 72%, transparent);
+
+  /* ---- type ---- */
+  --type-latin: var(--font-plex-sans), ui-sans-serif, system-ui, sans-serif;
+  --type-arabic: var(--font-plex-arabic), var(--font-plex-sans), sans-serif;
+  /* Plex Mono has no Arabic glyphs; they fall through to Plex Sans Arabic. */
+  --type-mono: var(--font-plex-mono), var(--font-plex-arabic), ui-monospace, monospace;
+
+  /* 32px at 390px viewport to 48px at 1440px, per the reference — the clamp
+     below previously topped out at 84px, nearly double spec, with everything
+     under it sized to match that oversized H1. Rebalanced together: H2 and
+     H3 now sit clearly between the corrected H1 and body copy instead of
+     nearly touching it. */
+  --step-display: clamp(2rem, 1.629rem + 1.524vw, 3rem);
+  --step-h2: clamp(1.625rem, 1.3rem + 1.33vw, 2.5rem);
+  --step-h3: clamp(1.25rem, 1.06rem + 0.76vw, 1.75rem);
+  --step-label: 0.72rem;
+
+  /* ---- layout ---- */
+  --gutter: clamp(1.25rem, 0.8rem + 2.2vw, 5rem);
+  --nav-h: 4.25rem;
+  --ease-out: cubic-bezier(0.62, 0.05, 0, 1);
+}
+
+/* Script metrics follow the nearest dir attribute, so a left-to-right block
+   inside an Arabic page gets Latin metrics and vice versa.
+
+   Arabic is not the Latin scale with a different font. It needs more leading,
+   no display tracking (it pulls connected letterforms apart), and a touch more
+   size to match Latin optically. */
+[dir="ltr"] {
+  --lh-display: 1.04;
+  --lh-body: 1.62;
+  --track-display: -0.022em;
+  /* 17px at 390px to 18.5px at 1440px — the floor the brief asks for, plus a
+     little headroom rather than landing exactly on the minimum. */
+  --step-body: clamp(1.0625rem, 1.03rem + 0.14vw, 1.1563rem);
+  --step-lead: clamp(1.06rem, 0.99rem + 0.42vw, 1.32rem);
+  --measure: 62ch;
+  font-family: var(--type-latin);
+}
+
+[dir="rtl"] {
+  --lh-display: 1.34;
+  --lh-body: 1.85;
+  --track-display: 0;
+  /* One step above the Latin body at each end (18px/20px vs 17px/18.5px) —
+     Arabic needs the extra size at the same optical weight, and diacritics
+     and connected letterforms are what suffers first when it isn't there. */
+  --step-body: clamp(1.125rem, 1.08rem + 0.19vw, 1.25rem);
+  --step-lead: clamp(1.12rem, 1.04rem + 0.45vw, 1.4rem);
+  --measure: 58ch;
+  font-family: var(--type-arabic);
+}
+
+/* ---- the ground flip ---- */
+[data-ground="deep"] {
+  --ground: var(--deep);
+  --ground-raised: var(--deep-raised);
+  --fg: var(--paper);
+  --fg-muted: color-mix(in srgb, var(--paper) 58%, var(--steel));
+  --rule: color-mix(in srgb, var(--paper) 20%, transparent);
+  --corridor: color-mix(in srgb, var(--paper) 13%, transparent);
+  --trace: color-mix(in srgb, var(--paper) 74%, transparent);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-ground: var(--ground);
+  --color-ground-raised: var(--ground-raised);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-rule: var(--rule);
+  --color-corridor: var(--corridor);
+  --color-trace: var(--trace);
+  --color-signal: var(--signal);
+  --color-deep: var(--deep);
+  --color-paper: var(--paper);
+  --color-steel: var(--steel);
+
+  --font-sans: var(--type-latin);
+  --font-mono: var(--type-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+/* ============================================================================
+   base
+   ============================================================================ */
+
+@layer base {
+  /* No CSS smooth scrolling: Lenis owns scrolling when motion is allowed, and a
+     native smooth scroll would fight it. Without JS, anchors jump instantly. */
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* Reserves the scrollbar's width permanently, so locking body scroll for
+       the preloader never shifts the layout. One edge only: the native
+       scrollbar sits on the right in every mainstream browser regardless of
+       dir — RTL mirrors element flow, not the scrollbar itself — so the
+       both-edges variant just left a permanent blank column on the left
+       with nothing to justify it. */
+    scrollbar-gutter: stable;
+  }
+
+  body {
+    background: var(--ground);
+    color: var(--fg);
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+    overflow-x: clip; /* the single most common RTL bug */
+  }
+
+  section {
+    background: var(--ground);
+    color: var(--fg);
+    transition: background-color 0.5s var(--ease-out), color 0.5s var(--ease-out);
+  }
+
+  /* Keep anchored headings clear of the fixed header on a native jump. */
+  section[id] {
+    scroll-margin-top: var(--nav-h);
+  }
+
+  /* Selection and focus use the ground's own ink, never the signal colour. */
+  ::selection {
+    background: var(--fg);
+    color: var(--ground);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ============================================================================
+   components
+   ============================================================================ */
+
+@layer components {
+  /* ---- type roles ---- */
+
+  .t-display {
+    font-size: var(--step-display);
+    line-height: var(--lh-display);
+    letter-spacing: var(--track-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .t-h2 {
+    font-size: var(--step-h2);
+    line-height: calc(var(--lh-display) + 0.06);
+    letter-spacing: var(--track-display);
+    font-weight: 600;
+    text-wrap: balance;
+  }
+
+  .t-h3 {
+    font-size: var(--step-h3);
+    line-height: 1.25;
+    font-weight: 600;
+  }
+
+  [dir="rtl"] .t-h3 {
+    line-height: 1.5;
+  }
+
+  .t-lead {
+    font-size: var(--step-lead);
+    line-height: calc(var(--lh-body) + 0.04);
+    color: var(--fg-muted);
+    max-width: var(--measure);
+  }
+
+  .t-body {
+    font-size: var(--step-body);
+    line-height: var(--lh-body);
+    max-width: var(--measure);
+    text-wrap: pretty;
+  }
+
+  /* Regular weight on #10171A reads thin. Medium only where the ground is
+     dark — paper sections keep the lighter weight, since it isn't a problem
+     there. */
+  [data-ground="deep"] .t-body,
+  [data-ground="deep"] .t-lead {
+    font-weight: 500;
+  }
+
+  /* Instrument labels. Real measurements only — never an eyebrow above a heading. */
+  .t-label {
+    font-family: var(--type-mono);
+    font-size: var(--step-label);
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* Tracking pulls connected Arabic letters apart. */
+  [dir="rtl"] .t-label {
+    letter-spacing: 0;
+  }
+
+  /* Latin numerals and addresses stay left-to-right inside Arabic text. */
+  .num {
+    direction: ltr;
+    unicode-bidi: isolate;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ---- media ---- */
+
+  /* A light grade toward the palette, not a filter over it. The amber rule
+     ("nothing is coloured until something is wrong") governs UI, not
+     documentary footage — full desaturation was stripping the material
+     honesty that real Pexels footage was sourced for in the first place.
+     Two low-opacity layers tinted with --deep (already "cold graphite, faint
+     blue-green cast") do the work: multiply cools the shadows, lighten lifts
+     the floor of black toward that same tone rather than crushing to pure
+     black. Both sit well under the threshold where a grade starts reading as
+     a filter. */
+  .media-grade {
+    position: relative;
+  }
+
+  .media-grade > video,
+  .media-grade > img {
+    filter: saturate(0.8);
+  }
+
+  .media-grade::before,
+  .media-grade::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: var(--deep);
+    pointer-events: none;
+  }
+
+  .media-grade::before {
+    opacity: 0.05;
+    mix-blend-mode: lighten;
+  }
+
+  .media-grade::after {
+    opacity: 0.1;
+    mix-blend-mode: multiply;
+  }
+
+  /* ---- layout ---- */
+
+  .shell {
+    width: 100%;
+    max-width: 96rem;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+  }
+
+  /* The chart recorder. Desktop: a gutter column holds the trace and the prose
+     sits beside it. Mobile: the gutter collapses and each section carries a
+     full-width horizontal strip of the same signal beneath its heading. */
+  .recorder {
+    display: grid;
+    gap: clamp(1.5rem, 1rem + 2vw, 3.5rem);
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  @media (min-width: 64rem) {
+    .recorder {
+      grid-template-columns: 13rem minmax(0, 1fr);
+      align-items: start;
+    }
+  }
+
+  .section-pad {
+    padding-block: clamp(4.5rem, 3rem + 7vw, 9.5rem);
+  }
+
+  /* Fan-fold perforation between two sections on the same ground. */
+  .fold {
+    border-top: 1px dashed var(--rule);
+  }
+
+  /* A condition the reader must not skim past. Weight and a heavy rule carry
+     it; the signal colour is not spent here. */
+  .callout {
+    max-width: var(--measure);
+    padding-block: 0.25rem;
+    padding-inline-start: 1.25rem;
+    border-inline-start: 3px solid var(--fg);
+    font-weight: 600;
+    line-height: var(--lh-body);
+  }
+
+  /* ---- form ---- */
+
+  .field-input {
+    display: block;
+    width: 100%;
+    min-height: 3rem;
+    padding: 0.7rem 0.9rem;
+    background: var(--ground-raised);
+    border: 1px solid var(--rule);
+    border-radius: 0;
+    color: var(--fg);
+    font: inherit;
+    transition: border-color 0.2s var(--ease-out);
+  }
+
+  .field-input:hover {
+    border-color: var(--fg-muted);
+  }
+
+  .field-input:focus-visible {
+    outline-offset: 0;
+    border-color: var(--fg);
+  }
+
+  /* An invalid field is marked by weight and by its message, not by colour. */
+  .field-input[aria-invalid="true"] {
+    border-color: var(--fg);
+    box-shadow: inset 0 0 0 1px var(--fg);
+  }
+
+  textarea.field-input {
+    resize: vertical;
+    min-height: 8rem;
+  }
+
+  [dir="rtl"] .field-input[dir="ltr"] {
+    text-align: right;
+  }
+
+  .field-error {
+    font-size: 0.92rem;
+    font-weight: 600;
+    color: var(--fg);
+  }
+
+  .field-error::before {
+    content: "— ";
+  }
+
+  /* ---- actions · the AREA form of amber ---- */
+
+  .cta-solid {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding-inline: 1.5rem;
+    background: var(--signal);
+    color: var(--deep);
+    font-weight: 600;
+    border: 0;
+    border-radius: 0;
+    cursor: pointer;
+    transition: background-color 0.25s var(--ease-out);
+  }
+
+  .cta-solid:hover {
+    background: color-mix(in srgb, var(--signal) 82%, #fff);
+  }
+
+  .cta-solid:disabled {
+    cursor: progress;
+    opacity: 0.7;
+  }
+
+  /* Secondary actions never take the signal colour. */
+  .cta-quiet {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding-inline: 1.25rem;
+    border: 1px solid var(--rule);
+    color: var(--fg);
+    background: transparent;
+    border-radius: 0;
+    cursor: pointer;
+    transition:
+      border-color 0.25s var(--ease-out),
+      background-color 0.25s var(--ease-out);
+  }
+
+  .cta-quiet:hover {
+    border-color: var(--fg-muted);
+    background: color-mix(in srgb, var(--fg) 5%, transparent);
+  }
+
+  /* ---- the trace ---- */
+
+  /* Time runs with the reading direction: charts draw right-to-left in Arabic. */
+  [dir="rtl"] .trace-flow {
+    transform: scaleX(-1);
+  }
+
+  /* Scroll-scrub track. CSS sticky, not a GSAP pin — no pin-spacer to fight in
+     RTL, and it behaves on phones. Shorter per stage on small screens. */
+  .scrub-track {
+    height: calc(var(--stages) * 110svh);
+  }
+
+  @media (max-width: 47.99rem) {
+    .scrub-track {
+      height: calc(var(--stages) * 85svh);
+    }
+  }
+}
+
+/* ============================================================================
+   motion
+
+   A `js` class is set on <html> before first paint. Anything that only makes
+   sense with scripting and motion is hidden without it, and its static
+   counterpart is shown instead — so the page reads correctly with JavaScript
+   off and with reduced motion on.
+   ============================================================================ */
+
+@layer components {
+  .motion-only {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js .motion-only {
+      display: block;
+    }
+
+    .js .static-only {
+      display: none;
+    }
+  }
+
+  /* The hero is above the fold, so it enters on CSS alone and never waits for
+     hydration. It starts at 0.01 rather than 0: fully transparent text is not
+     counted as painted, which would push Largest Contentful Paint back to
+     whenever the fade finishes. */
+  @media (prefers-reduced-motion: no-preference) {
+    .hero-enter {
+      animation: hero-enter 0.9s var(--ease-out) both;
+      animation-delay: calc(var(--i, 0) * 90ms + 60ms);
+    }
+  }
+
+  @keyframes hero-enter {
+    from {
+      opacity: 0.01;
+      transform: translateY(14px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* The pen crossing the paper, for traces further down the page (they draw
+     once they scroll into view, after load). The clip is in the SVG's own
+     coordinates, so an RTL-mirrored trace wipes from the right with no extra
+     rule. */
+  @media (prefers-reduced-motion: no-preference) {
+    .js .trace-draw {
+      transition: clip-path 1.6s var(--ease-out);
+    }
+
+    .js .trace-draw[data-orientation="horizontal"]:not(.is-drawn) {
+      clip-path: inset(0 100% 0 0);
+    }
+
+    .js .trace-draw[data-orientation="vertical"]:not(.is-drawn) {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+
+  /* The hero trace's first pass: a ground-coloured cover shrinks towards the
+     far end with transform only, so it stays off the main thread. The line
+     appears from the start of the reading direction.
+
+     Without JavaScript this plays on its own fixed timer, same as always.
+     With JavaScript the preloader owns the timing instead, so this waits for
+     a "reveal" class: MotionProvider adds it the moment either the preloader
+     hands off (rasd:preloader-exit) or, on a repeat visit this session where
+     the preloader never mounts at all, after the same 300ms this used to
+     open with unprompted. Either way the shrink itself is unchanged — only
+     when it starts moves. */
+  .trace-cover {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .trace-cover {
+      display: block;
+      transform-origin: right;
+      animation: trace-uncover 2s var(--ease-out) 0.3s both;
+    }
+
+    .js .trace-cover {
+      animation: none;
+      transform: none;
+    }
+
+    .js .trace-cover.reveal {
+      animation: trace-uncover 1.1s var(--ease-out) both;
+    }
+  }
+
+  @keyframes trace-uncover {
+    to {
+      transform: scaleX(0);
+    }
+  }
+
+  /* The hero trace crawls only when it can also be held (JavaScript present)
+     and motion is welcome. Everywhere else it is a still line. */
+  .live-toggle {
+    display: none;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .js .trace-live {
+      animation: trace-crawl 60s linear infinite;
+    }
+
+    .js .trace-live.is-paused,
+    .js .trace-live.is-held {
+      animation-play-state: paused;
+    }
+
+    .js .live-toggle {
+      display: inline-flex;
+    }
+  }
+
+  @keyframes trace-crawl {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  /* The preloader is a real gate driven by JavaScript, so without it there is
+     nothing to gate: the SSR'd overlay is present in the markup (rule: no
+     flash of unstyled page) but never blocks the page it sits in front of. */
+  .preloader {
+    display: none;
+  }
+
+  .js .preloader {
+    display: flex;
+    opacity: 1;
+    transition: opacity 0.7s var(--ease-out);
+  }
+
+  .js .preloader[data-exiting] {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* Set by the inline script in layout.tsx before first paint, on any load
+     after the first one this session — the same removal sstr.tech uses,
+     just decided a frame earlier so nothing ever flashes. */
+  [data-preloader-skip] .preloader {
+    display: none !important;
+  }
+
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
 }
