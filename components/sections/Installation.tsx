@@ -130,7 +130,7 @@ export default async function Installation({ locale }: { locale: Locale }) {
           ))}
         </ol>
 
-        <MediaClip slot="installation" variant="frame" className="mt-20 lg:w-2/3" />
+        <MediaClip slot="installation" variant="frame" className="mt-10 lg:w-2/3" />
       </div>
     </section>
   );

@@ -21,7 +21,7 @@ export default async function Deliverables({ locale }: { locale: Locale }) {
         {deliverables.map((item, i) => (
           <article
             key={item.id}
-            className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-12 lg:py-16 ${
+            className={`grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center py-7 lg:py-10 ${
               i > 0 ? "border-t border-rule" : ""
             }`}
           >

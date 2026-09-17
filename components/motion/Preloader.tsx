@@ -58,12 +58,13 @@ export default function Preloader({
       alreadyShown = true; // storage unavailable — don't risk blocking every load
     }
     if (alreadyShown) {
-      // No gating, no listeners, no rAF — the inline script in layout.tsx
-      // already set [data-preloader-skip] before this ever painted, and the
-      // matching CSS rule keeps this fully display:none (invisible and out
-      // of the accessibility tree) for as long as the component sits idle
-      // here. Setting state to unmount it would just be a second, redundant
-      // way of hiding something already hidden.
+      // On a fresh document parse the inline script in layout.tsx already set
+      // [data-preloader-skip] before this ever painted, so the CSS rule alone
+      // would be enough. But page.tsx remounts this component on every
+      // client-side route change too (e.g. the language switch), and that
+      // inline script never re-runs there — only sessionStorage does, so this
+      // is the one path that actually unmounts it in that case.
+      setMounted(false);
       return;
     }
 

@@ -9,7 +9,7 @@ export default async function Limits({ locale }: { locale: Locale }) {
 
   return (
     <SectionShell id="limits" index={9} ground="paper" heading={limits.heading}>
-      <p data-reveal className="t-body text-fg-muted mb-16">
+      <p data-reveal className="t-body text-fg-muted mb-8">
         {limits.body}
       </p>
       <div data-reveal>

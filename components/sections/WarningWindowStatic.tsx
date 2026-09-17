@@ -27,7 +27,7 @@ export default function WarningWindowStatic({ stages }: { stages: WarningStage[]
           <div
             key={stage.id}
             data-ground={stage.ground}
-            className="bg-ground text-fg py-16 lg:py-24"
+            className="bg-ground text-fg py-8 lg:py-14"
           >
             <div className="shell">
               <h3 className="t-h3 mb-3 max-w-[46ch]">{stage.title}</h3>

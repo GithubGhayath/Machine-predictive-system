@@ -21,7 +21,7 @@ export default async function Hero({ locale }: { locale: Locale }) {
     >
       <MediaClip slot="hero" variant="backdrop" />
 
-      <div className="shell relative flex-1 flex flex-col justify-center py-16">
+      <div className="shell relative flex-1 flex flex-col justify-center py-8">
         <h1
           id="hero-heading"
           tabIndex={-1}

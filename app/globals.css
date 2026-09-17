@@ -379,10 +379,9 @@
     }
   }
 
-  /* 56px mobile to 80px desktop — was clamping up to 152px on desktop and
-     ~75px even on mobile, which is most of what read as unfinished. */
+  /* 32px mobile to 56px desktop. */
   .section-pad {
-    padding-block: clamp(3.5rem, 2.943rem + 2.286vw, 5rem);
+    padding-block: clamp(2rem, 1.443rem + 2.286vw, 3.5rem);
     position: relative;
   }
 

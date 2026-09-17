@@ -97,7 +97,7 @@ export default async function Baseline({ locale }: { locale: Locale }) {
 
       <MachinePair labels={baseline.machineLabels} />
 
-      <aside data-reveal className="callout mt-16">
+      <aside data-reveal className="callout mt-8">
         <p>{baseline.callout}</p>
       </aside>
     </SectionShell>
