@@ -14,6 +14,33 @@ export default async function Header({ locale }: { locale: Locale }) {
       data-ground="deep"
       className="fixed inset-x-0 top-0 z-50 h-[var(--nav-h)] bg-ground/90 backdrop-blur-sm border-b border-rule"
     >
+      {/* A chart recorder tracking position through the page, not just a link
+          row. The marker's own position is set by MotionProvider's scroll
+          listener; these two divs are just the static baseline and the
+          element it moves. */}
+      <div
+        className="absolute inset-x-0 bottom-0 h-px pointer-events-none"
+        style={{ background: "rgba(88,103,110,0.25)" }}
+        aria-hidden="true"
+      />
+      <div
+        id="nav-scroll-marker"
+        className="absolute bottom-0 h-px w-8 pointer-events-none"
+        style={{ background: "var(--steel)", insetInlineEnd: 0 }}
+        aria-hidden="true"
+      />
+      {/* One tick per nav link, positioned by MotionProvider at that
+          section's real scroll offset. The active one marks itself by
+          growing, never by colour — amber is reserved for out-of-band
+          readings and the primary button, nowhere else. */}
+      {nav.links.map((link) => (
+        <div
+          key={link.href}
+          id={`nav-tick-${link.href.replace("#", "")}`}
+          className="nav-tick absolute bottom-0 pointer-events-none"
+          aria-hidden="true"
+        />
+      ))}
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:absolute focus:start-4 focus:top-4 focus:bg-fg focus:text-ground focus:px-3 focus:py-2"
@@ -46,12 +73,7 @@ export default async function Header({ locale }: { locale: Locale }) {
           ))}
         </nav>
 
-        <Link
-          href={`/${other}`}
-          hrefLang={other}
-          prefetch={false}
-          className="t-label border border-rule px-3 py-2 hover:border-fg-muted transition-colors min-h-11 flex items-center"
-        >
+        <Link href={`/${other}`} hrefLang={other} prefetch={false} className="lang-switch">
           {nav.languageLabel}
         </Link>
       </div>

@@ -1,8 +1,6 @@
 import MediaClip from "@/components/media/MediaClip";
-import LiveToggle from "@/components/motion/LiveToggle";
-import LiveTrace from "@/components/motion/LiveTrace";
+import HeroBurst from "@/components/motion/HeroBurst";
 import { getHeroContent } from "@/lib/data";
-import { SEGMENT_SPAN, segmentStart } from "@/lib/trace";
 import type { Locale } from "@/lib/data/types";
 
 /** Stagger order for the CSS entrance. */
@@ -50,17 +48,9 @@ export default async function Hero({ locale }: { locale: Locale }) {
         </div>
       </div>
 
-      {/* The signal starts here and runs the length of the site. */}
-      <div className="relative">
-        <div className="shell flex justify-end pb-3">
-          <LiveToggle labels={hero.liveControl} />
-        </div>
-        <LiveTrace
-          t0={segmentStart(0)}
-          span={SEGMENT_SPAN}
-          className="w-full h-[7rem] lg:h-[9rem]"
-        />
-      </div>
+      {/* Ambient texture, not a reading — the narrow chart strips further down
+          the page are what the visitor is meant to actually read. */}
+      <HeroBurst rtl={locale === "ar"} />
     </section>
   );
 }

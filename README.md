@@ -93,9 +93,9 @@ it ships inside the HTML).
 - **The contact form does not send anything yet.** It validates and shows a
   success message, but `endpoints.contactForm` is empty, so requests go nowhere.
   Connect it (see `lib/data/README.md`) before launch.
-- `CONTACT_EMAIL` and `CONTACT_PHONE` in `content/site.config.ts` are
-  placeholders.
-- No footage has been produced yet (see *Footage*).
+- `contact.phone` in `content/site.config.ts` is still a placeholder pattern
+  (`+963 11 XXX XXXX`), not a real number — the footer's `tel:` link won't
+  work until it's replaced.
 
 ---
 

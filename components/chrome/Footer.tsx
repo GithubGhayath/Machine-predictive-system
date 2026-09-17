@@ -46,12 +46,7 @@ export default async function Footer({ locale }: { locale: Locale }) {
 
         <div className="md:col-span-2 md:justify-self-end">
           {nav ? (
-            <Link
-              href={`/${other}`}
-              hrefLang={other}
-              prefetch={false}
-              className="t-label inline-flex items-center min-h-11 border border-rule px-3 hover:border-fg-muted transition-colors"
-            >
+            <Link href={`/${other}`} hrefLang={other} prefetch={false} className="lang-switch">
               {nav.languageLabel}
             </Link>
           ) : null}

@@ -16,7 +16,7 @@ export default async function WarningWindow({ locale }: { locale: Locale }) {
       <WarningWindowStatic stages={content.stages} />
       <WarningWindowClient stages={content.stages} />
 
-      <section data-ground="paper" data-reveal-group className="pt-16 pb-24">
+      <section data-ground="paper" data-reveal-group className="pt-8 pb-12">
         <div className="shell">
           <p data-reveal className="t-body text-fg-muted">
             {content.closing}

@@ -62,6 +62,9 @@
   --gutter: clamp(1.25rem, 0.8rem + 2.2vw, 5rem);
   --nav-h: 4.25rem;
   --ease-out: cubic-bezier(0.62, 0.05, 0, 1);
+  /* The site's second (and last) ease. For sweeps and threshold-crossing
+     moments specifically — --ease-out is for reveals and colour settles. */
+  --ease-sweep: cubic-bezier(0.6, 0.08, 0.02, 0.99);
 }
 
 /* Script metrics follow the nearest dir attribute, so a left-to-right block
@@ -249,6 +252,51 @@
     font-variant-numeric: tabular-nums;
   }
 
+  /* ---- nav ---- */
+
+  .nav-tick {
+    width: 1px;
+    height: 6px;
+    background: var(--steel);
+    transition: height 0.2s var(--ease-out), width 0.2s var(--ease-out);
+  }
+
+  .nav-tick.is-active {
+    width: 2px;
+    height: 10px;
+    background: var(--fg);
+  }
+
+  /* A proper control, not a floating debug box: generous target, mono
+     label at a readable size, a hover state that actually responds. */
+  .lang-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4em;
+    min-height: 2.75rem;
+    padding-inline: 1rem;
+    font-family: var(--type-mono);
+    font-size: 0.85rem;
+    letter-spacing: 0.04em;
+    color: var(--fg-muted);
+    border: 1px solid var(--rule);
+    transition:
+      border-color 0.25s var(--ease-out),
+      color 0.25s var(--ease-out),
+      background-color 0.25s var(--ease-out);
+  }
+
+  [dir="rtl"] .lang-switch {
+    letter-spacing: 0;
+  }
+
+  .lang-switch:hover,
+  .lang-switch:focus-visible {
+    color: var(--fg);
+    border-color: var(--fg-muted);
+    background: color-mix(in srgb, var(--fg) 6%, transparent);
+  }
+
   /* ---- media ---- */
 
   /* A light grade toward the palette, not a filter over it. The amber rule
@@ -266,7 +314,7 @@
 
   .media-grade > video,
   .media-grade > img {
-    filter: saturate(0.8);
+    filter: contrast(1.07) saturate(0.88) brightness(0.9);
   }
 
   .media-grade::before,
@@ -313,8 +361,37 @@
     }
   }
 
+  /* 56px mobile to 80px desktop — was clamping up to 152px on desktop and
+     ~75px even on mobile, which is most of what read as unfinished. */
   .section-pad {
-    padding-block: clamp(4.5rem, 3rem + 7vw, 9.5rem);
+    padding-block: clamp(3.5rem, 2.943rem + 2.286vw, 5rem);
+    position: relative;
+  }
+
+  /* Smooths the ground boundary only where it's an actual hard cut — the
+     site's own ground sequence has consecutive sections on the same
+     ground (paper·paper, deep·paper·paper, ...), and a rule that assumes
+     strict alternation would paint a fade toward a colour that isn't
+     actually what comes next. :has() checks the real next section instead
+     of guessing. Matches [data-ground] sections only, never the footer —
+     it lives outside <main>, so no section has it as a sibling, and that
+     boundary stays a deliberate hard cut. */
+  .section-pad::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 80px;
+    pointer-events: none;
+    z-index: 2;
+  }
+
+  section[data-ground="paper"].section-pad:has(+ section[data-ground="deep"])::after {
+    background: linear-gradient(to bottom, transparent, var(--deep));
+  }
+
+  section[data-ground="deep"].section-pad:has(+ section[data-ground="paper"])::after {
+    background: linear-gradient(to bottom, transparent, var(--paper));
   }
 
   /* Fan-fold perforation between two sections on the same ground. */
@@ -382,24 +459,65 @@
     content: "— ";
   }
 
-  /* ---- actions · the AREA form of amber ---- */
+  /* ---- actions · the AREA form of amber ----
+     A button reads as a reading crossing a threshold: at rest it's a stroke
+     in-band, no fill. Amber sweeps in from the start edge on interaction —
+     the trace leaving its corridor — and the label inverts as the fill
+     passes under it. Primary fills solid; secondary only ever grows a
+     thin underline, never a fill — the two must never read as the same
+     mark, or the fill stops meaning anything. */
 
   .cta-solid {
+    position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     min-height: 3rem;
-    padding-inline: 1.5rem;
-    background: var(--signal);
-    color: var(--deep);
+    padding-inline: 2rem;
+    background: transparent;
+    color: var(--signal);
     font-weight: 600;
-    border: 0;
+    border: 1px solid var(--signal);
     border-radius: 0;
     cursor: pointer;
-    transition: background-color 0.25s var(--ease-out);
+    overflow: clip;
+    transition: color 0.2s var(--ease-sweep) 0.15s;
   }
 
-  .cta-solid:hover {
-    background: color-mix(in srgb, var(--signal) 82%, #fff);
+  .cta-solid::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: var(--signal);
+    transform: translateX(-101%);
+    transition: transform 0.5s var(--ease-sweep);
+  }
+
+  [dir="rtl"] .cta-solid::before {
+    transform: translateX(101%);
+  }
+
+  .cta-solid:hover,
+  .cta-solid:focus-visible {
+    color: var(--deep);
+  }
+
+  .cta-solid:hover::before,
+  .cta-solid:focus-visible::before {
+    transform: translateX(0);
+  }
+
+  /* Touch has no hover to depend on: the primary action reads as filled
+     from the start, same as the hovered state on a pointer device. */
+  @media (hover: none) {
+    .cta-solid {
+      color: var(--deep);
+      transition: none;
+    }
+    .cta-solid::before {
+      transform: translateX(0);
+    }
   }
 
   .cta-solid:disabled {
@@ -407,25 +525,55 @@
     opacity: 0.7;
   }
 
-  /* Secondary actions never take the signal colour. */
+  .cta-solid:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
+  }
+
+  /* Secondary actions never take the signal colour, never fill — only the
+     underline grows. Calm, subordinate to the primary action. */
   .cta-quiet {
+    position: relative;
     display: inline-flex;
     align-items: center;
+    justify-content: center;
     min-height: 3rem;
-    padding-inline: 1.25rem;
-    border: 1px solid var(--rule);
-    color: var(--fg);
+    padding-inline: 1.75rem;
+    border: 1px solid var(--steel);
+    color: var(--steel);
     background: transparent;
     border-radius: 0;
     cursor: pointer;
     transition:
       border-color 0.25s var(--ease-out),
-      background-color 0.25s var(--ease-out);
+      color 0.25s var(--ease-out);
   }
 
-  .cta-quiet:hover {
-    border-color: var(--fg-muted);
-    background: color-mix(in srgb, var(--fg) 5%, transparent);
+  .cta-quiet::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: 0;
+    height: 2px;
+    width: 0;
+    background: currentColor;
+    transition: width 0.5s var(--ease-sweep);
+  }
+
+  .cta-quiet:hover,
+  .cta-quiet:focus-visible {
+    border-color: var(--fg);
+    color: var(--fg);
+  }
+
+  .cta-quiet:hover::after,
+  .cta-quiet:focus-visible::after {
+    width: 100%;
+  }
+
+  .cta-quiet:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 3px;
   }
 
   /* ---- the trace ---- */

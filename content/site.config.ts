@@ -25,8 +25,10 @@ export const siteConfig = {
       : "http://localhost:3000"),
 
   contact: {
-    email: "CONTACT_EMAIL",
-    phone: "CONTACT_PHONE",
+    email: "info@rasd.sy",
+    // Still a placeholder pattern, not a dialable number — the tel: link
+    // this feeds will not work until this is a real number.
+    phone: "+963 11 XXX XXXX",
   },
 
   /** Empty until the client supplies real accounts. Rendered only if non-empty. */

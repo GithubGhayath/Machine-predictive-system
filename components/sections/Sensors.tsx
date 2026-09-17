@@ -35,7 +35,7 @@ export default async function Sensors({ locale }: { locale: Locale }) {
       data-reveal-group
       className="section-pad fold"
     >
-      <div className="shell grid grid-cols-1 lg:grid-cols-12 gap-y-20 lg:gap-y-28">
+      <div className="shell grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-y-14">
         <MediaClip slot="sensors" variant="frame" className="lg:col-span-8 lg:row-start-2" />
 
         {sensors.map((sensor) => (
@@ -55,7 +55,7 @@ export default async function Sensors({ locale }: { locale: Locale }) {
                 </>
               )}
             </div>
-            <h3 data-reveal className="t-h3 mt-7 mb-3">
+            <h3 data-reveal className="t-h3 mt-4 mb-2">
               {sensor.name}
             </h3>
             <p data-reveal className="t-body text-fg-muted">
