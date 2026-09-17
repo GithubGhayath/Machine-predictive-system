@@ -45,6 +45,7 @@ export default async function Sensors({ locale }: { locale: Locale }) {
                 <TemperatureDrawing
                   vibrationLabel={vibrationName}
                   unit={UNIT.temperature}
+                  locale={locale}
                 />
               ) : (
                 <>

@@ -1,17 +1,30 @@
 import { buildTrace, segmentStart, smoothstep, toPathData, type Point } from "@/lib/trace";
+import Oscilloscope from "@/components/motion/Oscilloscope";
+import type { Locale } from "@/lib/data/types";
 
 /**
  * Three instruments, three drawings. They are deliberately different shapes and
  * heights: a waveform, a rising curve against a threshold, and a modulated
  * envelope. Nothing here is a card.
  *
- * Labels live in HTML, never inside the SVGs: these drawings stretch to their
- * box and mirror in RTL, and both would distort text.
+ * Each renders twice: a plain SVG (`.static-only`, shown without JS or under
+ * reduced motion) and a canvas oscilloscope (`.motion-only`) built from the
+ * exact same points — same rule as the rest of the site, just applied here
+ * for the first time because the canvas variant genuinely can't render
+ * without a script.
+ *
+ * Labels live in HTML, never inside the drawing itself: these stretch to
+ * their box and mirror in RTL, and both would distort text.
  *
  * Amber appears only where the argument puts it. Temperature takes the warning
  * colour after it crosses its threshold, and only because vibration is already
  * out of band above it. It never earns the colour alone.
  */
+
+const THRESHOLD_LABEL: Record<Locale, string> = {
+  ar: "حد الإنذار",
+  en: "ALARM THRESHOLD",
+};
 
 /** The early channel: a signature that starts to leave its band partway along. */
 export function VibrationDrawing() {
@@ -26,39 +39,49 @@ export function VibrationDrawing() {
   });
 
   return (
-    <svg
-      viewBox={`0 0 ${box.w} ${box.h}`}
-      preserveAspectRatio="none"
-      aria-hidden
-      className="trace-flow w-full h-[7.5rem] lg:h-[9rem]"
-    >
-      <rect
-        x={0}
-        y={geo.bandTop}
-        width={box.w}
-        height={geo.bandBottom - geo.bandTop}
-        fill="var(--corridor)"
-      />
-      <path
-        d={geo.d}
-        fill="none"
-        stroke="var(--trace)"
-        strokeWidth={1.5}
-        strokeLinejoin="round"
-        vectorEffect="non-scaling-stroke"
-      />
-      {geo.outOfBand.map((d, i) => (
+    <div className="relative w-full h-[7.5rem] lg:h-[9rem]">
+      <svg
+        viewBox={`0 0 ${box.w} ${box.h}`}
+        preserveAspectRatio="none"
+        aria-hidden
+        className="static-only trace-flow absolute inset-0 size-full"
+      >
+        <rect
+          x={0}
+          y={geo.bandTop}
+          width={box.w}
+          height={geo.bandBottom - geo.bandTop}
+          fill="var(--corridor)"
+        />
         <path
-          key={i}
-          d={d}
+          d={geo.d}
           fill="none"
-          stroke="var(--signal)"
-          strokeWidth={2.5}
+          stroke="var(--trace)"
+          strokeWidth={1.5}
           strokeLinejoin="round"
           vectorEffect="non-scaling-stroke"
         />
-      ))}
-    </svg>
+        {geo.outOfBand.map((d, i) => (
+          <path
+            key={i}
+            d={d}
+            fill="none"
+            stroke="var(--signal)"
+            strokeWidth={2.5}
+            strokeLinejoin="round"
+            vectorEffect="non-scaling-stroke"
+          />
+        ))}
+      </svg>
+      <Oscilloscope
+        className="motion-only trace-flow absolute inset-0"
+        box={box}
+        layers={[
+          { points: geo.points, color: "paper" },
+          ...geo.outOfBandPoints.map((points) => ({ points, color: "amber" as const })),
+        ]}
+      />
+    </div>
   );
 }
 
@@ -70,9 +93,11 @@ const VIBRATION_ONSET = 0.24;
 export function TemperatureDrawing({
   vibrationLabel,
   unit,
+  locale,
 }: {
   vibrationLabel: string;
   unit: string;
+  locale: Locale;
 }) {
   const box = { w: 1000, h: 170 };
   const threshold = 70;
@@ -109,74 +134,108 @@ export function TemperatureDrawing({
     <div className="flex flex-col gap-3">
       <div>
         <p className="t-label mb-1">{vibrationLabel}</p>
-        <svg
-          viewBox="0 0 1000 64"
-          preserveAspectRatio="none"
-          aria-hidden
-          className="trace-flow w-full h-[3.5rem]"
-        >
-          <rect
-            x={0}
-            y={vibration.bandTop}
-            width={1000}
-            height={vibration.bandBottom - vibration.bandTop}
-            fill="var(--corridor)"
-          />
-          <path
-            d={vibration.d}
-            fill="none"
-            stroke="var(--trace)"
-            strokeWidth={1.25}
-            vectorEffect="non-scaling-stroke"
-          />
-          {vibration.outOfBand.map((d, i) => (
+        <div className="relative w-full h-[3.5rem]">
+          <svg
+            viewBox="0 0 1000 64"
+            preserveAspectRatio="none"
+            aria-hidden
+            className="static-only trace-flow absolute inset-0 size-full"
+          >
+            <rect
+              x={0}
+              y={vibration.bandTop}
+              width={1000}
+              height={vibration.bandBottom - vibration.bandTop}
+              fill="var(--corridor)"
+            />
             <path
-              key={i}
-              d={d}
+              d={vibration.d}
               fill="none"
-              stroke="var(--signal)"
-              strokeWidth={2}
+              stroke="var(--trace)"
+              strokeWidth={1.25}
               vectorEffect="non-scaling-stroke"
             />
-          ))}
-        </svg>
+            {vibration.outOfBand.map((d, i) => (
+              <path
+                key={i}
+                d={d}
+                fill="none"
+                stroke="var(--signal)"
+                strokeWidth={2}
+                vectorEffect="non-scaling-stroke"
+              />
+            ))}
+          </svg>
+          <Oscilloscope
+            className="motion-only trace-flow absolute inset-0"
+            box={{ w: 1000, h: 64 }}
+            layers={[
+              { points: vibration.points, color: "paper" },
+              ...vibration.outOfBandPoints.map((points) => ({ points, color: "amber" as const })),
+            ]}
+          />
+        </div>
       </div>
 
       <div>
         <p className="t-label mb-1">
           <span className="num">{unit}</span>
         </p>
-        <svg
-          viewBox={`0 0 ${box.w} ${box.h}`}
-          preserveAspectRatio="none"
-          aria-hidden
-          className="trace-flow w-full h-[8rem] lg:h-[9.5rem]"
-        >
-          <line
-            x1={0}
-            y1={threshold}
-            x2={box.w}
-            y2={threshold}
-            stroke="var(--rule)"
-            strokeWidth={1}
-            strokeDasharray="4 6"
-            vectorEffect="non-scaling-stroke"
+        <div className="relative w-full h-[8rem] lg:h-[9.5rem]">
+          <svg
+            viewBox={`0 0 ${box.w} ${box.h}`}
+            preserveAspectRatio="none"
+            aria-hidden
+            className="static-only trace-flow absolute inset-0 size-full"
+          >
+            <line
+              x1={0}
+              y1={threshold}
+              x2={box.w}
+              y2={threshold}
+              stroke="var(--rule)"
+              strokeWidth={1}
+              strokeDasharray="4 6"
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={toPathData(before)}
+              fill="none"
+              stroke="var(--trace)"
+              strokeWidth={1.75}
+              vectorEffect="non-scaling-stroke"
+            />
+            <path
+              d={toPathData(after)}
+              fill="none"
+              stroke="var(--signal)"
+              strokeWidth={2.5}
+              vectorEffect="non-scaling-stroke"
+            />
+          </svg>
+          <Oscilloscope
+            className="motion-only trace-flow absolute inset-0"
+            box={box}
+            thresholdY={threshold}
+            layers={[
+              { points: before, color: "paper" },
+              { points: after, color: "amber" },
+            ]}
           />
-          <path
-            d={toPathData(before)}
-            fill="none"
-            stroke="var(--trace)"
-            strokeWidth={1.75}
-            vectorEffect="non-scaling-stroke"
-          />
-          <path
-            d={toPathData(after)}
-            fill="none"
-            stroke="var(--signal)"
-            strokeWidth={2.5}
-            vectorEffect="non-scaling-stroke"
-          />
-        </svg>
+          <span
+            className="motion-only t-label absolute pointer-events-none"
+            style={{
+              insetInlineStart: "0.5rem",
+              top: `${(threshold / box.h) * 100}%`,
+              transform: "translateY(-125%)",
+              color: "var(--signal)",
+            }}
+            lang={locale}
+            dir={locale === "ar" ? "rtl" : "ltr"}
+          >
+            {THRESHOLD_LABEL[locale]}
+          </span>
+        </div>
       </div>
     </div>
   );
@@ -201,36 +260,47 @@ export function CurrentDrawing() {
   const envelopeArea = `${toPathData([...upper, ...[...lower].reverse()])}Z`;
 
   return (
-    <svg
-      viewBox={`0 0 ${box.w} ${box.h}`}
-      preserveAspectRatio="none"
-      aria-hidden
-      className="trace-flow w-full h-[6.5rem] lg:h-[7.5rem]"
-    >
-      <path d={envelopeArea} fill="var(--corridor)" />
-      <path
-        d={toPathData(upper)}
-        fill="none"
-        stroke="var(--trace)"
-        strokeWidth={1.5}
-        vectorEffect="non-scaling-stroke"
+    <div className="relative w-full h-[6.5rem] lg:h-[7.5rem]">
+      <svg
+        viewBox={`0 0 ${box.w} ${box.h}`}
+        preserveAspectRatio="none"
+        aria-hidden
+        className="static-only trace-flow absolute inset-0 size-full"
+      >
+        <path d={envelopeArea} fill="var(--corridor)" />
+        <path
+          d={toPathData(upper)}
+          fill="none"
+          stroke="var(--trace)"
+          strokeWidth={1.5}
+          vectorEffect="non-scaling-stroke"
+        />
+        <path
+          d={toPathData(lower)}
+          fill="none"
+          stroke="var(--trace)"
+          strokeWidth={1.5}
+          vectorEffect="non-scaling-stroke"
+        />
+        <line
+          x1={0}
+          y1={mid}
+          x2={box.w}
+          y2={mid}
+          stroke="var(--rule)"
+          strokeWidth={1}
+          vectorEffect="non-scaling-stroke"
+        />
+      </svg>
+      <Oscilloscope
+        className="motion-only trace-flow absolute inset-0"
+        box={box}
+        fill={{ points: [...upper, ...[...lower].reverse()] }}
+        layers={[
+          { points: upper, color: "paper" },
+          { points: lower, color: "paper" },
+        ]}
       />
-      <path
-        d={toPathData(lower)}
-        fill="none"
-        stroke="var(--trace)"
-        strokeWidth={1.5}
-        vectorEffect="non-scaling-stroke"
-      />
-      <line
-        x1={0}
-        y1={mid}
-        x2={box.w}
-        y2={mid}
-        stroke="var(--rule)"
-        strokeWidth={1}
-        vectorEffect="non-scaling-stroke"
-      />
-    </svg>
+    </div>
   );
 }

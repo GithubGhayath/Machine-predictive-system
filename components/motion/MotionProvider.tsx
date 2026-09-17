@@ -99,58 +99,7 @@ export default function MotionProvider({ children }: { children: React.ReactNode
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
 
-      // The nav's own trace: a marker that advances with scroll progress,
-      // plus a tick per nav link at that section's real position (measured,
-      // not guessed evenly-spaced) — the nav reads as a chart recorder
-      // tracking where you are on the page, not just a row of links.
-      // Declared outside the gsap.context callback so teardown can remove
-      // the resize listener — gsap.context().revert() only undoes what GSAP
-      // itself created, not plain DOM listeners added inside it.
-      const marker = document.getElementById("nav-scroll-marker");
-      const navLinks = gsap.utils.toArray<HTMLAnchorElement>('header nav a[href^="#"]');
-      const ticks = navLinks
-        .map((link) => document.getElementById(`nav-tick-${link.hash.slice(1)}`))
-        .filter((el): el is HTMLElement => !!el);
-
-      const layoutTicks = () => {
-        const total = document.body.scrollHeight - window.innerHeight;
-        if (total <= 0) return;
-        navLinks.forEach((link, i) => {
-          const target = document.querySelector(link.hash);
-          const tickEl = ticks[i];
-          if (!target || !tickEl) return;
-          const ratio = target.getBoundingClientRect().top + window.scrollY;
-          const pct = Math.min(100, Math.max(0, (ratio / total) * 100));
-          tickEl.style.insetInlineStart = `${pct}%`;
-        });
-      };
-      layoutTicks();
-      window.addEventListener("resize", layoutTicks);
-
       const ctx = gsap.context(() => {
-        ScrollTrigger.create({
-          trigger: document.body,
-          start: "top top",
-          end: "bottom bottom",
-          scrub: true,
-          onUpdate(self) {
-            if (marker) {
-              const pct = self.progress * 100;
-              marker.style.insetInlineStart = `${pct}%`;
-              marker.style.insetInlineEnd = "auto";
-            }
-            const nearest = ticks.reduce<{ el: HTMLElement | null; d: number }>(
-              (best, tick) => {
-                const tickPct = parseFloat(tick.style.insetInlineStart || "0");
-                const d = Math.abs(tickPct - self.progress * 100);
-                return d < best.d ? { el: tick, d } : best;
-              },
-              { el: null, d: Infinity },
-            );
-            ticks.forEach((t) => t.classList.toggle("is-active", t === nearest.el));
-          },
-        });
-
         gsap.utils.toArray<HTMLElement>("[data-reveal-group]").forEach((group) => {
           if (group.getBoundingClientRect().top < window.innerHeight) return;
 
@@ -187,7 +136,6 @@ export default function MotionProvider({ children }: { children: React.ReactNode
       });
 
       teardown = () => {
-        window.removeEventListener("resize", layoutTicks);
         ctx.revert();
         gsap.ticker.remove(tick);
         lenis.destroy();

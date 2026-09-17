@@ -92,6 +92,9 @@ export interface TraceGeometry {
   d: string;
   /** Sub-paths for the runs that sit outside the learned band. Stroke-only. */
   outOfBand: string[];
+  /** The same two series as plain points, for canvas renderers that can't use path strings. */
+  points: Point[];
+  outOfBandPoints: Point[][];
   /** Corridor edges in viewBox units. */
   bandTop: number;
   bandBottom: number;
@@ -174,9 +177,13 @@ export function buildTrace({
 
   // Contiguous runs outside the band become their own stroke-only sub-paths.
   const outOfBand: string[] = [];
+  const outOfBandPoints: Point[][] = [];
   let run: typeof points = [];
   const flush = () => {
-    if (run.length > 1) outOfBand.push(toPathData(run, precision));
+    if (run.length > 1) {
+      outOfBand.push(toPathData(run, precision));
+      outOfBandPoints.push(run.map(({ x, y }) => ({ x, y })));
+    }
     run = [];
   };
 
@@ -200,6 +207,8 @@ export function buildTrace({
   return {
     d,
     outOfBand,
+    points: points.map(({ x, y }) => ({ x, y })),
+    outOfBandPoints,
     bandTop: mid - bandHalf,
     bandBottom: mid + bandHalf,
     mid,

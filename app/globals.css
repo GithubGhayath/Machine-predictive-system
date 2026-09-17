@@ -64,7 +64,7 @@
   --ease-out: cubic-bezier(0.62, 0.05, 0, 1);
   /* The site's second (and last) ease. For sweeps and threshold-crossing
      moments specifically — --ease-out is for reveals and colour settles. */
-  --ease-sweep: cubic-bezier(0.6, 0.08, 0.02, 0.99);
+  --ease-sweep: cubic-bezier(0.625, 0.05, 0, 1);
 }
 
 /* Script metrics follow the nearest dir attribute, so a left-to-right block
@@ -254,17 +254,163 @@
 
   /* ---- nav ---- */
 
-  .nav-tick {
-    width: 1px;
-    height: 6px;
-    background: var(--steel);
-    transition: height 0.2s var(--ease-out), width 0.2s var(--ease-out);
+  /* Transparent over the hero video; scrolling any distance swaps in a
+     blurred ground so the bar stays legible once real page content — not
+     just the video — is sitting under it. */
+  .nav-bar {
+    background: transparent;
+    border-bottom: 1px solid transparent;
+    transition:
+      background-color 0.4s var(--ease-out),
+      backdrop-filter 0.4s var(--ease-out),
+      border-color 0.4s var(--ease-out);
   }
 
-  .nav-tick.is-active {
-    width: 2px;
-    height: 10px;
+  .nav-bar[data-scrolled] {
+    background: color-mix(in srgb, var(--ground) 88%, transparent);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  /* A plain scroll read-out, not a data trace — steel, never the signal
+     colour, same reasoning that kept the old per-link ticks off it. */
+  .nav-progress {
+    position: absolute;
+    inset-inline: 0;
+    bottom: 0;
+    height: 1px;
+    background: var(--steel);
+    transform: scaleX(0);
+    transform-origin: left center;
+  }
+
+  [dir="rtl"] .nav-progress {
+    transform-origin: right center;
+  }
+
+  /* Three lines of deliberately uneven width, hand-drawn rather than a
+     generic icon-font glyph. They unify to one length and cross into an X. */
+  .hamburger {
+    position: relative;
+    display: inline-flex;
+    flex-direction: column;
+    align-items: flex-end;
+    justify-content: center;
+    gap: 5px;
+    width: 2.75rem;
+    height: 2.75rem;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+  }
+
+  .hamburger-line {
+    display: block;
+    height: 1.5px;
     background: var(--fg);
+    transition:
+      transform 0.35s var(--ease-sweep),
+      width 0.35s var(--ease-sweep),
+      opacity 0.2s var(--ease-out);
+  }
+
+  .hamburger-line--top {
+    width: 22px;
+  }
+
+  .hamburger-line--mid {
+    width: 15px;
+  }
+
+  .hamburger-line--bottom {
+    width: 19px;
+  }
+
+  .hamburger[data-open] .hamburger-line {
+    width: 22px;
+  }
+
+  .hamburger[data-open] .hamburger-line--top {
+    transform: translateY(6.5px) rotate(45deg);
+  }
+
+  .hamburger[data-open] .hamburger-line--mid {
+    opacity: 0;
+  }
+
+  .hamburger[data-open] .hamburger-line--bottom {
+    transform: translateY(-6.5px) rotate(-45deg);
+  }
+
+  /* Full-screen, editorial: the menu the bar itself no longer shows. */
+  .nav-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--deep);
+    color: var(--paper);
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.5s var(--ease-out), visibility 0s linear 0.5s;
+  }
+
+  .nav-overlay[data-open] {
+    opacity: 1;
+    visibility: visible;
+    transition: opacity 0.5s var(--ease-out);
+  }
+
+  .nav-overlay-list {
+    display: flex;
+    flex-direction: column;
+    width: min(90vw, 36rem);
+    padding-inline: var(--gutter);
+  }
+
+  .nav-overlay-link {
+    display: flex;
+    align-items: baseline;
+    gap: 1rem;
+    padding-block: 1.1rem;
+    border-block-end: 1px solid color-mix(in srgb, var(--paper) 20%, transparent);
+    font-size: clamp(2rem, 1.6rem + 2.2vw, 3.25rem);
+    font-weight: 400;
+    color: var(--paper);
+    opacity: 0;
+    transform: translateY(14px);
+    transition:
+      color 0.25s var(--ease-out),
+      opacity 0.5s var(--ease-out),
+      transform 0.5s var(--ease-out);
+    transition-delay: calc(var(--i, 0) * 60ms);
+  }
+
+  .nav-overlay[data-open] .nav-overlay-link {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .nav-overlay-link:last-child {
+    border-block-end: none;
+  }
+
+  .nav-overlay-link:hover,
+  .nav-overlay-link:focus-visible {
+    color: var(--steel);
+  }
+
+  .nav-overlay-link .num {
+    color: var(--steel);
+    font-size: 1rem;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-overlay-link {
+      transition-delay: 0s;
+    }
   }
 
   /* A proper control, not a floating debug box: generous target, mono
@@ -295,24 +441,6 @@
     color: var(--fg);
     border-color: var(--fg-muted);
     background: color-mix(in srgb, var(--fg) 6%, transparent);
-  }
-
-  /* A numbered station list, not a row of generic links — the index is
-     always in-band steel; only the underline responds to interaction. */
-  .nav-link::after {
-    content: "";
-    position: absolute;
-    bottom: -2px;
-    inset-inline-start: 0;
-    height: 1px;
-    width: 0;
-    background: currentColor;
-    transition: width 0.3s var(--ease-out);
-  }
-
-  .nav-link:hover::after,
-  .nav-link:focus-visible::after {
-    width: 100%;
   }
 
   /* ---- media ---- */
