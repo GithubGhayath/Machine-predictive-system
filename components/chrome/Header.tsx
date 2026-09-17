@@ -62,13 +62,16 @@ export default async function Header({ locale }: { locale: Locale }) {
         </Link>
 
         <nav className="hidden md:flex items-center gap-7">
-          {nav.links.map((link) => (
+          {nav.links.map((link, i) => (
             <a
               key={link.href}
               href={link.href}
-              className="text-fg-muted hover:text-fg transition-colors text-[0.95rem]"
+              className="nav-link group relative flex items-center gap-2 text-fg-muted hover:text-fg transition-colors"
             >
-              {link.label}
+              <span className="num t-label" aria-hidden="true">
+                0{i + 1}
+              </span>
+              <span className="text-[0.95rem]">{link.label}</span>
             </a>
           ))}
         </nav>

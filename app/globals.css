@@ -297,6 +297,24 @@
     background: color-mix(in srgb, var(--fg) 6%, transparent);
   }
 
+  /* A numbered station list, not a row of generic links — the index is
+     always in-band steel; only the underline responds to interaction. */
+  .nav-link::after {
+    content: "";
+    position: absolute;
+    bottom: -2px;
+    inset-inline-start: 0;
+    height: 1px;
+    width: 0;
+    background: currentColor;
+    transition: width 0.3s var(--ease-out);
+  }
+
+  .nav-link:hover::after,
+  .nav-link:focus-visible::after {
+    width: 100%;
+  }
+
   /* ---- media ---- */
 
   /* A light grade toward the palette, not a filter over it. The amber rule
