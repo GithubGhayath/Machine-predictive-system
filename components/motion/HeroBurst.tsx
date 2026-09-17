@@ -120,7 +120,7 @@ export default function HeroBurst({ rtl = false }: { rtl?: boolean }) {
       <svg
         viewBox={`0 0 ${W} ${H}`}
         preserveAspectRatio="none"
-        className="static-only block size-full"
+        className="static-only absolute inset-0 size-full"
         style={mirror}
         aria-hidden="true"
       >

@@ -342,11 +342,18 @@
     transform: translateY(-6.5px) rotate(-45deg);
   }
 
-  /* Full-screen, editorial: the menu the bar itself no longer shows. */
+  /* Full-screen, editorial: the menu the bar itself no longer shows.
+     Portaled to <body> (see NavBar.tsx) rather than nested in <header>,
+     because the scrolled header's own backdrop-filter creates a containing
+     block for fixed-position descendants — inset:0 on a nested overlay
+     would then resolve against the header's own small box, not the
+     viewport. Explicit width/height are the same fix belt-and-braces. */
   .nav-overlay {
     position: fixed;
     inset: 0;
-    z-index: 30;
+    width: 100vw;
+    height: 100dvh;
+    z-index: 49;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -608,9 +615,9 @@
      A button reads as a reading crossing a threshold: at rest it's a stroke
      in-band, no fill. Amber sweeps in from the start edge on interaction —
      the trace leaving its corridor — and the label inverts as the fill
-     passes under it. Primary fills solid; secondary only ever grows a
-     thin underline, never a fill — the two must never read as the same
-     mark, or the fill stops meaning anything. */
+     passes under it. Primary fills solid amber; secondary gets the same
+     sliding sweep at a near-invisible wash of the foreground colour, never
+     amber and never opaque enough to read as the same mark as the primary. */
 
   .cta-solid {
     position: relative;
@@ -625,7 +632,7 @@
     border: 1px solid var(--signal);
     border-radius: 0;
     cursor: pointer;
-    overflow: clip;
+    overflow: hidden;
     transition: color 0.2s var(--ease-sweep) 0.15s;
   }
 
@@ -635,12 +642,12 @@
     inset: 0;
     z-index: -1;
     background: var(--signal);
-    transform: translateX(-101%);
-    transition: transform 0.5s var(--ease-sweep);
+    translate: -101% 0;
+    transition: translate 0.5s var(--ease-sweep);
   }
 
   [dir="rtl"] .cta-solid::before {
-    transform: translateX(101%);
+    translate: 101% 0;
   }
 
   .cta-solid:hover,
@@ -650,7 +657,7 @@
 
   .cta-solid:hover::before,
   .cta-solid:focus-visible::before {
-    transform: translateX(0);
+    translate: 0 0;
   }
 
   /* Touch has no hover to depend on: the primary action reads as filled
@@ -661,7 +668,7 @@
       transition: none;
     }
     .cta-solid::before {
-      transform: translateX(0);
+      translate: 0 0;
     }
   }
 
@@ -675,8 +682,9 @@
     outline-offset: 3px;
   }
 
-  /* Secondary actions never take the signal colour, never fill — only the
-     underline grows. Calm, subordinate to the primary action. */
+  /* Secondary actions never take the signal colour, never fill with it —
+     the underline still grows, and a near-invisible wash of the foreground
+     colour slides in under it, calm and subordinate to the primary action. */
   .cta-quiet {
     position: relative;
     display: inline-flex;
@@ -689,9 +697,29 @@
     background: transparent;
     border-radius: 0;
     cursor: pointer;
+    overflow: hidden;
     transition:
       border-color 0.25s var(--ease-out),
       color 0.25s var(--ease-out);
+  }
+
+  .cta-quiet::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgba(234, 237, 236, 0.06);
+    translate: -101% 0;
+    transition: translate 0.5s var(--ease-sweep);
+  }
+
+  [dir="rtl"] .cta-quiet::before {
+    translate: 101% 0;
+  }
+
+  .cta-quiet:hover::before,
+  .cta-quiet:focus-visible::before {
+    translate: 0 0;
   }
 
   .cta-quiet::after {

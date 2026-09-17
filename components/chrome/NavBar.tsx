@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import Link from "next/link";
 import type { Locale, NavLink } from "@/lib/data/types";
 
@@ -40,9 +41,17 @@ export default function NavBar({
   const [scrolled, setScrolled] = useState(false);
   const [open, setOpen] = useState(false);
   const [progress, setProgress] = useState(0);
+  const [mounted, setMounted] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const firstLinkRef = useRef<HTMLAnchorElement>(null);
   const labels = LABELS[locale];
+
+  // The overlay portals to <body> (see below) so a scrolled header's own
+  // backdrop-filter — which creates a containing block for its fixed-position
+  // descendants — can never clip it to the header's own small box. Portals
+  // need a DOM to render into, so this only flips true after hydration; the
+  // overlay is closed by default anyway, so there's nothing to show before then.
+  useEffect(() => setMounted(true), []);
 
   useEffect(() => {
     let raf = 0;
@@ -136,26 +145,30 @@ export default function NavBar({
         aria-hidden="true"
       />
 
-      <div id="nav-overlay" className="nav-overlay" data-open={open ? "" : undefined}>
-        <nav aria-label={labels.menu} className="nav-overlay-list">
-          {links.map((link, i) => (
-            <a
-              key={link.href}
-              ref={i === 0 ? firstLinkRef : undefined}
-              href={link.href}
-              className="nav-overlay-link"
-              style={{ "--i": i } as React.CSSProperties}
-              tabIndex={open ? 0 : -1}
-              onClick={() => setOpen(false)}
-            >
-              <span className="num t-label" aria-hidden="true">
-                0{i + 1}
-              </span>
-              <span>{link.label}</span>
-            </a>
-          ))}
-        </nav>
-      </div>
+      {mounted &&
+        createPortal(
+          <div id="nav-overlay" className="nav-overlay" data-open={open ? "" : undefined}>
+            <nav aria-label={labels.menu} className="nav-overlay-list">
+              {links.map((link, i) => (
+                <a
+                  key={link.href}
+                  ref={i === 0 ? firstLinkRef : undefined}
+                  href={link.href}
+                  className="nav-overlay-link"
+                  style={{ "--i": i } as React.CSSProperties}
+                  tabIndex={open ? 0 : -1}
+                  onClick={() => setOpen(false)}
+                >
+                  <span className="num t-label" aria-hidden="true">
+                    0{i + 1}
+                  </span>
+                  <span>{link.label}</span>
+                </a>
+              ))}
+            </nav>
+          </div>,
+          document.body,
+        )}
     </header>
   );
 }
