@@ -258,7 +258,7 @@ export default function Preloader({
           <svg
             viewBox={`0 0 ${W} ${H}`}
             preserveAspectRatio="none"
-            className="block w-full h-auto"
+            className="block w-full h-auto overflow-visible"
             style={{ transform: locale === "ar" ? "scaleX(-1)" : undefined }}
             aria-hidden
           >
