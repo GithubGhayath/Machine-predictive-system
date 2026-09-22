@@ -1,5 +1,5 @@
 import { SEGMENT_SPAN, segmentStart, smoothstep } from "@/lib/trace";
-import type { WarningStage } from "@/lib/data/types";
+import type { Locale, WarningStage } from "@/lib/data/types";
 
 /** Shared by the server-rendered static stages and the client scrub. */
 
@@ -30,6 +30,24 @@ export function storyDeviation(stages: WarningStage[]) {
     const settle = to > from ? 0.3 : 0.06;
     return from + (to - from) * smoothstep(0, settle, within);
   };
+}
+
+const STATUS_LABEL: Record<Locale, { normal: string; drift: string; alert: string }> = {
+  ar: { normal: "طبيعي", drift: "انحراف", alert: "تنبيه" },
+  en: { normal: "NORMAL", drift: "DRIFT", alert: "ALERT" },
+};
+
+/**
+ * The live status word beside the trace, derived from the same deviation
+ * number that drives the chart — never a separate, hand-typed state, so the
+ * two can't drift apart. Amber only crosses over at the same threshold the
+ * out-of-band paths already use for their own colour.
+ */
+export function readoutFor(locale: Locale, deviation: number) {
+  const labels = STATUS_LABEL[locale];
+  if (deviation >= 0.7) return { label: labels.alert, alert: true };
+  if (deviation >= 0.25) return { label: labels.drift, alert: false };
+  return { label: labels.normal, alert: false };
 }
 
 export function Band({ top, bottom }: { top: number; bottom: number }) {

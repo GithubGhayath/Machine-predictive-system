@@ -115,8 +115,11 @@ export default function MotionProvider({ children }: { children: React.ReactNode
           // revealed.
           const masks = items.filter((item) => item.dataset.reveal === "mask");
           const rest = items.filter((item) => item.dataset.reveal !== "mask");
+          // A hair of depth on top of the rise — the incoming group settles
+          // into focus rather than just sliding up, which is what makes a
+          // section boundary read as arrival instead of a hard cut.
           if (masks.length) gsap.set(masks, { opacity: 0, yPercent: 100 });
-          if (rest.length) gsap.set(rest, { opacity: 0, y: 14 });
+          if (rest.length) gsap.set(rest, { opacity: 0, y: 14, scale: 0.985 });
 
           ScrollTrigger.batch(items, {
             start: "top 88%",
@@ -126,6 +129,7 @@ export default function MotionProvider({ children }: { children: React.ReactNode
                 opacity: 1,
                 y: 0,
                 yPercent: 0,
+                scale: 1,
                 duration: 0.9,
                 ease: "rasd",
                 stagger: 0.07,

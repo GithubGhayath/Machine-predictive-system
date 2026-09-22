@@ -2,14 +2,20 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { buildTrace, DEFAULT_AMPLITUDE, signalAt } from "@/lib/trace";
-import { BOX, Band, SPAN, T0, storyDeviation } from "./warning-window-story";
-import type { WarningStage } from "@/lib/data/types";
+import { BOX, Band, SPAN, T0, readoutFor, storyDeviation } from "./warning-window-story";
+import type { Locale, WarningStage } from "@/lib/data/types";
 
 /**
  * The scroll-scrubbed chart. Only shown with JavaScript and without reduced
  * motion; WarningWindowStatic covers every other case.
  */
-export default function WarningWindowClient({ stages }: { stages: WarningStage[] }) {
+export default function WarningWindowClient({
+  stages,
+  locale,
+}: {
+  stages: WarningStage[];
+  locale: Locale;
+}) {
   const { geometry, deviation } = useMemo(() => {
     const deviation = storyDeviation(stages);
     const geometry = buildTrace({
@@ -77,6 +83,8 @@ export default function WarningWindowClient({ stages }: { stages: WarningStage[]
     };
   }, [geometry.mid, deviation, stages]);
 
+  const readout = readoutFor(locale, stages[active].deviation);
+
   return (
     <section
       ref={trackRef}
@@ -89,6 +97,10 @@ export default function WarningWindowClient({ stages }: { stages: WarningStage[]
     >
       <div className="sticky top-0 min-h-[100svh] flex flex-col justify-center overflow-clip pt-[var(--nav-h)]">
         <div className="shell w-full">
+          <p className="status-readout mb-4" data-alert={readout.alert ? "" : undefined}>
+            {readout.label}
+          </p>
+
           <div className="relative min-h-[15rem] md:min-h-[11rem]">
             {stages.map((stage, i) => (
               // Inactive stages are only faded, not hidden from assistive tech:

@@ -1,3 +1,4 @@
+import SectionBoundary from "@/components/chrome/SectionBoundary";
 import MediaClip from "@/components/media/MediaClip";
 import StillImage from "@/components/media/StillImage";
 import { getInstallationSteps } from "@/lib/data";
@@ -107,7 +108,7 @@ export default async function Installation({ locale }: { locale: Locale }) {
       id="installation"
       data-ground="paper"
       data-reveal-group
-      className="section-pad fold"
+      className="section-pad fold relative"
     >
       <div className="shell">
         <div data-reveal className="hidden lg:block">
@@ -140,6 +141,7 @@ export default async function Installation({ locale }: { locale: Locale }) {
           />
         </div>
       </div>
+      <SectionBoundary />
     </section>
   );
 }

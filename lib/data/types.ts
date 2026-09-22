@@ -27,6 +27,8 @@ export interface ProseSection {
   id: string;
   heading: string;
   body: string;
+  /** A single sentence pulled out and set apart — the stakes in one line. */
+  callout?: string;
 }
 
 export interface WarningStage {
@@ -99,6 +101,8 @@ export interface ContactField {
   label: string;
   type: ContactFieldType;
   required: boolean;
+  /** Example input only — never rendered as a real value, never submitted. */
+  placeholder?: string;
 }
 
 export type FieldErrorCode = "required" | "invalid";

@@ -49,35 +49,36 @@
   "cost": {
     "id": "cost",
     "heading": "An unplanned stop costs more than the part that failed.",
-    "body": "When a machine stops without warning, the damage does not end with the fault. The shift stops with it, and everything that depends on the shift: idle labour, spare parts on emergency freight, orders that miss their date. The same fault, caught early, is handled in scheduled downtime, with a part ordered calmly and a crew ready. The difference between the two outcomes is not the fault — it is when you learned about it."
+    "body": "The stop itself takes seconds; the damage it does runs in every direction from that point. The whole shift stands still: a crew ready to work with nothing to do, a line halted mid-cycle, a delivery commitment that was fine a minute ago and is now at risk. The search for a replacement part starts at the worst possible moment — there is no time to compare price or supplier, so it goes out on whatever freight is fastest, because every additional hour of downtime costs more than the price difference ever would. And everything scheduled behind that machine, every downstream step and every commitment to another customer, slips with it without exception.",
+    "callout": "The fault itself does not change between the two outcomes. What changes is whether you knew about it before it became a stoppage, or after."
   },
   "warningWindow": {
     "stages": [
       {
         "id": "day-zero",
         "title": "Day zero — the machine in its normal state",
-        "body": "The machine runs inside its usual range. At this stage the system watches and learns its particular rhythm: how it vibrates, how it warms, how its current behaves in ordinary operation.",
+        "body": "The machine runs inside its usual range — that is the steady line in front of you. At this stage the system watches its particular rhythm: how it vibrates, how it warms, how its current behaves in ordinary operation.",
         "deviation": 0,
         "ground": "paper"
       },
       {
         "id": "first-drift",
         "title": "First drift — nobody can hear it yet",
-        "body": "A small mechanical flaw in a bearing begins to change the vibration signature slightly. No excess heat, no unusual noise, nothing a routine walk-around would catch. The system notices the difference because it knows what this machine looks like when it is healthy.",
+        "body": "Watch the reading start to waver: a small mechanical flaw in a bearing changes the vibration signature slightly. No excess heat, no unusual noise, nothing a routine walk-around would catch — but the system notices the difference, because it knows what this machine looks like when it is healthy.",
         "deviation": 0.4,
         "ground": "paper"
       },
       {
         "id": "confirmed",
         "title": "The drift confirms — the alert goes out",
-        "body": "Readings outside the normal range keep recurring, and other channels begin to confirm them. At that point the system does more than notice a difference: it sends the supervisor an alert naming the machine and the indicator that changed.",
+        "body": "Now the reading clearly leaves its band, in the one colour reserved for exactly this. Out-of-band readings keep recurring, and other channels begin to confirm them. At that point the system sends the supervisor an alert naming the machine and the indicator that changed.",
         "deviation": 1,
         "ground": "deep"
       },
       {
         "id": "never-happened",
         "title": "The stoppage that never happened",
-        "body": "The affected part is replaced in the next scheduled maintenance stop. No lost shift, no emergency freight, no improvised decision in the middle of production. That is the value RASD delivers: the time between the first signal and the actual stop.",
+        "body": "The line settles back to steady. The affected part is replaced in the next scheduled maintenance stop — no lost shift, no emergency freight, no improvised decision in the middle of production. That is the value RASD delivers: the time between the first signal and the actual stop.",
         "deviation": 0.12,
         "ground": "paper"
       }
@@ -175,31 +176,36 @@
         "name": "name",
         "label": "Name",
         "type": "text",
-        "required": true
+        "required": true,
+        "placeholder": "e.g. Ahmad Al-Shami"
       },
       {
         "name": "company",
         "label": "Factory or company",
         "type": "text",
-        "required": true
+        "required": true,
+        "placeholder": "e.g. Sham Textile Mills"
       },
       {
         "name": "phone",
         "label": "Phone",
         "type": "tel",
-        "required": true
+        "required": true,
+        "placeholder": "e.g. +963 991 234 567"
       },
       {
         "name": "machineType",
         "label": "Machine type",
         "type": "text",
-        "required": false
+        "required": false,
+        "placeholder": "e.g. air compressor, textile line, feed pump"
       },
       {
         "name": "message",
         "label": "Message",
         "type": "textarea",
-        "required": false
+        "required": false,
+        "placeholder": "Describe your production line, and which machine you'd like to trial the system on first."
       }
     ],
     "submitLabel": "Send request",

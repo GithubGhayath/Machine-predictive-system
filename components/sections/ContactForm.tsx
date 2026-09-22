@@ -61,12 +61,13 @@ export default function ContactForm({ content }: { content: ContactFormContent }
           defaultValue: state.values[field.name],
           "aria-invalid": error ? true : undefined,
           "aria-describedby": error ? errorId : undefined,
+          placeholder: field.placeholder,
           className: "field-input",
         };
 
         return (
           <div key={field.name} className={SPAN[field.name] ?? ""}>
-            <label htmlFor={id} className="block mb-2 text-[0.95rem]">
+            <label htmlFor={id} className="field-label">
               {field.label}
               {field.required ? (
                 <span aria-hidden className="text-fg-muted">
@@ -76,26 +77,28 @@ export default function ContactForm({ content }: { content: ContactFormContent }
               ) : null}
             </label>
 
-            {field.type === "textarea" ? (
-              <textarea {...shared} rows={5} />
-            ) : (
-              <input
-                {...shared}
-                type={field.type}
-                autoComplete={
-                  field.name === "name"
-                    ? "name"
-                    : field.name === "company"
-                      ? "organization"
-                      : field.name === "phone"
-                        ? "tel"
-                        : "off"
-                }
-                inputMode={field.type === "tel" ? "tel" : undefined}
-                // Phone numbers read left to right in both languages.
-                dir={field.type === "tel" ? "ltr" : undefined}
-              />
-            )}
+            <div className="field-shell">
+              {field.type === "textarea" ? (
+                <textarea {...shared} rows={5} />
+              ) : (
+                <input
+                  {...shared}
+                  type={field.type}
+                  autoComplete={
+                    field.name === "name"
+                      ? "name"
+                      : field.name === "company"
+                        ? "organization"
+                        : field.name === "phone"
+                          ? "tel"
+                          : "off"
+                  }
+                  inputMode={field.type === "tel" ? "tel" : undefined}
+                  // Phone numbers read left to right in both languages.
+                  dir={field.type === "tel" ? "ltr" : undefined}
+                />
+              )}
+            </div>
 
             {error ? (
               <p id={errorId} className="field-error mt-2">

@@ -557,20 +557,22 @@
     position: absolute;
     inset-inline: 0;
     bottom: 0;
-    height: 48px;
+    height: 128px;
     pointer-events: none;
     z-index: 2;
   }
 
-  /* A soft haze toward the next ground, not a wash to it: the ramp stops well
-     short of full strength, so the boundary reads as atmosphere rather than a
-     dark band, and the eased midpoint keeps it from showing a visible edge. */
+  /* A haze toward the next ground, not a wash to it. The first pass here
+     read as fully invisible in practice (48px, capped at 22% alpha) — this
+     is taller and reaches roughly half strength at the very edge, so the
+     boundary is plainly visible as atmosphere without repeating the
+     original's solid, full-strength band. */
   section[data-ground="paper"].section-pad:has(+ section[data-ground="deep"])::after {
     background: linear-gradient(
       to bottom,
       transparent,
-      color-mix(in srgb, var(--deep) 6%, transparent) 55%,
-      color-mix(in srgb, var(--deep) 22%, transparent)
+      color-mix(in srgb, var(--deep) 18%, transparent) 60%,
+      color-mix(in srgb, var(--deep) 52%, transparent)
     );
   }
 
@@ -578,8 +580,8 @@
     background: linear-gradient(
       to bottom,
       transparent,
-      color-mix(in srgb, var(--paper) 6%, transparent) 55%,
-      color-mix(in srgb, var(--paper) 22%, transparent)
+      color-mix(in srgb, var(--paper) 18%, transparent) 60%,
+      color-mix(in srgb, var(--paper) 52%, transparent)
     );
   }
 
@@ -599,19 +601,72 @@
     line-height: var(--lh-body);
   }
 
-  /* ---- form ---- */
+  /* A fixed instrument readout beside the scrub track: it updates with scroll
+     the way a live status line would. Amber only while the stage it names is
+     genuinely out of band — the same rule as the trace under it, applied to
+     three words instead of a line. */
+  .status-readout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5em;
+    font-family: var(--type-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    color: var(--fg-muted);
+  }
+
+  [dir="rtl"] .status-readout {
+    letter-spacing: 0;
+  }
+
+  .status-readout::before {
+    content: "";
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+  }
+
+  .status-readout[data-alert] {
+    color: var(--signal);
+  }
+
+  /* ---- form ----
+     Underline fields, not boxes: a tick-mark baseline and a focus sweep that
+     travels the same way the button fills do, so the form reads as another
+     instrument on the page instead of a bolted-on default HTML form. */
+
+  .field-label {
+    display: block;
+    margin-bottom: 0.6rem;
+    font-family: var(--type-mono);
+    font-size: 0.78rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--fg-muted);
+  }
+
+  [dir="rtl"] .field-label {
+    letter-spacing: 0;
+    text-transform: none;
+  }
 
   .field-input {
+    position: relative;
     display: block;
     width: 100%;
-    min-height: 3rem;
-    padding: 0.7rem 0.9rem;
-    background: var(--ground-raised);
-    border: 1px solid var(--rule);
+    min-height: 2.75rem;
+    padding: 0.5rem 0.1rem;
+    background:
+      linear-gradient(90deg, var(--rule) 1px, transparent 1px) 0 100% / 8px 6px repeat-x,
+      transparent;
+    border: none;
     border-radius: 0;
+    border-bottom: 1px solid var(--rule);
     color: var(--fg);
     font: inherit;
-    transition: border-color 0.2s var(--ease-out);
+    transition: border-color 0.25s var(--ease-out);
   }
 
   .field-input:hover {
@@ -619,23 +674,50 @@
   }
 
   .field-input:focus-visible {
-    outline-offset: 0;
+    outline: none;
     border-color: var(--fg);
+  }
+
+  /* The travelling sweep: a 2px rule that grows from the reading's start
+     edge on focus, echoing the CTA fill and the scrub track's pen. */
+  .field-shell {
+    position: relative;
+  }
+
+  .field-shell::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: 0;
+    bottom: -1px;
+    height: 2px;
+    width: 0;
+    background: var(--fg);
+    transition: width 0.4s var(--ease-sweep);
+  }
+
+  .field-shell:focus-within::after {
+    width: 100%;
   }
 
   /* An invalid field is marked by weight and by its message, not by colour. */
   .field-input[aria-invalid="true"] {
     border-color: var(--fg);
-    box-shadow: inset 0 0 0 1px var(--fg);
+    border-bottom-width: 2px;
   }
 
   textarea.field-input {
     resize: vertical;
-    min-height: 8rem;
+    min-height: 7rem;
+    background-position: 0 100%;
   }
 
   [dir="rtl"] .field-input[dir="ltr"] {
     text-align: right;
+  }
+
+  .field-input::placeholder {
+    color: var(--fg-muted);
+    opacity: 0.6;
   }
 
   .field-error {

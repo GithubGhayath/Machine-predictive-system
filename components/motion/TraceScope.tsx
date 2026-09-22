@@ -7,7 +7,7 @@ interface TraceScopeProps {
   /** Where this window starts on the site-wide signal, so bands join up. */
   t0: number;
   span: number;
-  deviation?: number;
+  deviation?: number | ((progress: number) => number);
   amplitude?: number;
   band?: number;
   /** A real measurement unit, shown as a small mono tag. Never a decorative label. */

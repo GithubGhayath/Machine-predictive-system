@@ -1,3 +1,4 @@
+import SectionBoundary from "@/components/chrome/SectionBoundary";
 import TraceScope from "@/components/motion/TraceScope";
 import { SEGMENT_SPAN, segmentStart } from "@/lib/trace";
 
@@ -71,6 +72,7 @@ export default function SectionShell({
 
         {children}
       </div>
+      <SectionBoundary />
     </section>
   );
 }

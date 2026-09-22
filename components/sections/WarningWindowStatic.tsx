@@ -1,12 +1,18 @@
 import { buildTrace, SEGMENT_SPAN } from "@/lib/trace";
-import { BOX, Band, T0, storyDeviation } from "./warning-window-story";
-import type { WarningStage } from "@/lib/data/types";
+import { BOX, Band, T0, readoutFor, storyDeviation } from "./warning-window-story";
+import type { Locale, WarningStage } from "@/lib/data/types";
 
 /**
  * Without motion (or without JavaScript): every stage in order, each showing
  * its own stretch of the chart. Server-rendered — it never changes.
  */
-export default function WarningWindowStatic({ stages }: { stages: WarningStage[] }) {
+export default function WarningWindowStatic({
+  stages,
+  locale,
+}: {
+  stages: WarningStage[];
+  locale: Locale;
+}) {
   const deviation = storyDeviation(stages);
   const n = stages.length;
 
@@ -30,6 +36,14 @@ export default function WarningWindowStatic({ stages }: { stages: WarningStage[]
             className="bg-ground text-fg py-8 lg:py-14"
           >
             <div className="shell">
+              {(() => {
+                const readout = readoutFor(locale, stage.deviation);
+                return (
+                  <p className="status-readout mb-4" data-alert={readout.alert ? "" : undefined}>
+                    {readout.label}
+                  </p>
+                );
+              })()}
               <h3 className="t-h3 mb-3 max-w-[46ch]">{stage.title}</h3>
               <p className="t-body text-fg-muted mb-8">{stage.body}</p>
               <svg
