@@ -1,4 +1,5 @@
 import MediaClip from "@/components/media/MediaClip";
+import StillImage from "@/components/media/StillImage";
 import { getInstallationSteps } from "@/lib/data";
 import { buildTrace, segmentStart } from "@/lib/trace";
 import type { Locale } from "@/lib/data/types";
@@ -130,7 +131,14 @@ export default async function Installation({ locale }: { locale: Locale }) {
           ))}
         </ol>
 
-        <MediaClip slot="installation" variant="frame" className="mt-10 lg:w-2/3" />
+        <div className="mt-10 grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <MediaClip slot="installation" variant="frame" className="lg:col-span-2" />
+          <StillImage
+            src="/images/motor.webp"
+            sizes="(min-width: 1024px) 30vw, 100vw"
+            className="aspect-[16/9] lg:aspect-auto"
+          />
+        </div>
       </div>
     </section>
   );

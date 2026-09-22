@@ -1,7 +1,7 @@
 "use client";
 
 import { useLayoutEffect, useRef, useState } from "react";
-import { buildTrace, SEGMENT_SPAN, segmentStart } from "@/lib/trace";
+import { buildTrace, SEGMENT_SPAN, segmentStart, toPathData } from "@/lib/trace";
 import { siteConfig } from "@/content/site.config";
 import type { Locale } from "@/lib/data/types";
 
@@ -13,6 +13,32 @@ const EXIT_MS = 700;
 const W = 1000;
 const H = 116;
 const T0 = segmentStart(0);
+
+/** The whole signal, built once. The pen traces along it instead of rescaling it. */
+const SIGNAL = buildTrace({
+  t0: T0,
+  span: SEGMENT_SPAN,
+  width: W,
+  height: H,
+  deviation: 0,
+  samples: 320,
+  precision: 1,
+}).points;
+
+/** The signal up to `progress` (0..1), ending on an interpolated tip so the pen never jumps between samples. */
+function traceUpTo(progress: number) {
+  const last = SIGNAL.length - 1;
+  const at = Math.min(1, Math.max(0, progress)) * last;
+  const whole = Math.floor(at);
+  const points = SIGNAL.slice(0, whole + 1);
+  if (whole < last) {
+    const a = SIGNAL[whole];
+    const b = SIGNAL[whole + 1];
+    const f = at - whole;
+    points.push({ x: a.x + (b.x - a.x) * f, y: a.y + (b.y - a.y) * f });
+  }
+  return points;
+}
 
 /** Names shown in the console if the hard timeout fires before they settle. */
 const GATE_NAMES = ["fonts", "hero video", "hero poster", "motion engine"] as const;
@@ -179,12 +205,18 @@ export default function Preloader({
     }, HARD_TIMEOUT_MS);
 
     // Visual easing only — the numbers above are the truth; this just keeps
-    // the drawn line from snapping between the four real checkpoints.
+    // the drawn line from snapping between the four real checkpoints. The
+    // pace itself drifts (two out-of-phase sines modulate the easing rate), so
+    // the pen slows into detail and hurries across flat stretches like a hand
+    // or a scope beam following a live signal, not a constant sweep.
     let raf = 0;
-    const tick = () => {
+    const tick = (now: number) => {
+      const pace = 0.045 + 0.085 * (0.5 + 0.5 * Math.sin(now * 0.0031 + Math.sin(now * 0.0011) * 2.4));
       setProgress((current) => {
-        const next = current + (target.current - current) * 0.12;
-        return Math.abs(next - target.current) < 0.002 ? target.current : next;
+        const gap = target.current - current;
+        const step = Math.max(Math.abs(gap) * pace, Math.min(Math.abs(gap), 0.0007));
+        const next = current + Math.sign(gap) * step;
+        return Math.abs(target.current - next) < 0.002 ? target.current : next;
       });
       raf = requestAnimationFrame(tick);
     };
@@ -201,27 +233,8 @@ export default function Preloader({
   const brand = siteConfig.brand.name[locale];
   const pct = Math.round(progress * 100);
 
-  let grown = null;
-  let corridorTop = H / 2;
-  let corridorHeight = 0;
-  const corridorWidth = W * progress;
-  if (!reducedMotion) {
-    const full = buildTrace({ t0: T0, span: SEGMENT_SPAN, width: W, height: H, deviation: 0 });
-    const bandHalf = (full.bandBottom - full.bandTop) / 2;
-    corridorTop = H / 2 - bandHalf * progress;
-    corridorHeight = bandHalf * 2 * progress;
-    grown =
-      progress > 0.006
-        ? buildTrace({
-            t0: T0,
-            span: SEGMENT_SPAN * progress,
-            width: W * progress,
-            height: H,
-            deviation: 0,
-            samples: Math.max(2, Math.round(240 * progress)),
-          })
-        : null;
-  }
+  const drawn = reducedMotion ? [] : traceUpTo(progress);
+  const tip = drawn[drawn.length - 1];
 
   return (
     <div
@@ -249,23 +262,23 @@ export default function Preloader({
             style={{ transform: locale === "ar" ? "scaleX(-1)" : undefined }}
             aria-hidden
           >
-            <rect
-              x={0}
-              y={corridorTop}
-              width={corridorWidth}
-              height={corridorHeight}
-              fill="color-mix(in srgb, var(--steel) 22%, transparent)"
-            />
-            {grown ? (
+            {drawn.length > 1 ? (
               <path
-                d={grown.d}
+                d={toPathData(drawn, 1)}
                 fill="none"
-                stroke="var(--steel)"
-                strokeWidth={1.5}
+                stroke="var(--paper)"
+                strokeOpacity={0.9}
+                strokeWidth={2.4}
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 vectorEffect="non-scaling-stroke"
               />
+            ) : null}
+            {tip && progress < 0.995 ? (
+              <>
+                <circle cx={tip.x} cy={tip.y} r={20} fill="var(--paper)" opacity={0.14} />
+                <circle cx={tip.x} cy={tip.y} r={8} fill="var(--paper)" />
+              </>
             ) : null}
           </svg>
         </div>

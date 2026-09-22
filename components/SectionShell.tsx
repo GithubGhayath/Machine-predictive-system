@@ -1,4 +1,4 @@
-import Trace from "@/components/motion/Trace";
+import TraceScope from "@/components/motion/TraceScope";
 import { SEGMENT_SPAN, segmentStart } from "@/lib/trace";
 
 interface SectionShellProps {
@@ -9,6 +9,8 @@ interface SectionShellProps {
   deviation?: number;
   /** A real measurement, e.g. "mm/s RMS". Never a decorative eyebrow. */
   unit?: string;
+  /** Turn the band off where the section draws its own charts. */
+  trace?: boolean;
   heading?: React.ReactNode;
   /**
    * Draws the fan-fold perforation along the top edge. Use it where this
@@ -21,13 +23,11 @@ interface SectionShellProps {
 }
 
 /**
- * The chart recorder.
- *
- * Desktop (≥62rem): a gutter column carries the trace down the page beside the
- * prose. Mobile: the gutter has nowhere to go, so the same window on the signal
- * is rendered as a full-width horizontal strip under the heading. Because both
- * read the same `t0`, the chart stays continuous either way — the axis rotates,
- * the signal does not restart.
+ * Every section reads a window onto the same continuous signal. The window is
+ * an oscilloscope band that runs the full width under the heading — the same
+ * instrument screen the sensor drawings use — rather than a narrow chart
+ * boxed into a side column. Because each section's `t0` starts where the
+ * previous one ended, the bands still read as one recording.
  */
 export default function SectionShell({
   id,
@@ -35,13 +35,12 @@ export default function SectionShell({
   ground = "paper",
   deviation = 0,
   unit,
+  trace = true,
   heading,
   fold = false,
   backdrop,
   children,
 }: SectionShellProps) {
-  const t0 = segmentStart(index);
-
   return (
     <section
       id={id}
@@ -50,48 +49,27 @@ export default function SectionShell({
       className={`section-pad relative ${fold ? "fold" : ""}`}
     >
       {backdrop}
-      <div className="shell recorder relative">
-        <div className="hidden lg:block sticky top-[calc(var(--nav-h)+2rem)]">
-          {unit ? (
-            <p className="t-label mb-3">
-              <span className="num">{unit}</span>
-            </p>
-          ) : null}
-          <Trace
-            t0={t0}
-            span={SEGMENT_SPAN}
-            deviation={deviation}
-            orientation="vertical"
-            className="h-[26rem] w-[7rem]"
-          />
-        </div>
+      <div className="shell relative">
+        {heading ? (
+          <div className="overflow-clip mb-7">
+            <h2 data-reveal="mask" className="t-h2 max-w-[24ch]">
+              {heading}
+            </h2>
+          </div>
+        ) : null}
 
-        <div>
-          {heading ? (
-            <div className="overflow-clip mb-7">
-              <h2 data-reveal="mask" className="t-h2 max-w-[24ch]">
-                {heading}
-              </h2>
-            </div>
-          ) : null}
-
-          <div className="lg:hidden mb-8">
-            {unit ? (
-              <p className="t-label mb-2">
-                <span className="num">{unit}</span>
-              </p>
-            ) : null}
-            <Trace
-              t0={t0}
+        {trace ? (
+          <div className="mb-8 lg:mb-10">
+            <TraceScope
+              t0={segmentStart(index)}
               span={SEGMENT_SPAN}
               deviation={deviation}
-              orientation="horizontal"
-              className="trace-flow h-[5.5rem] w-full"
+              unit={unit}
             />
           </div>
+        ) : null}
 
-          {children}
-        </div>
+        {children}
       </div>
     </section>
   );

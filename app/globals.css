@@ -342,6 +342,27 @@
     transform: translateY(-6.5px) rotate(-45deg);
   }
 
+  /* The reticle sits tight inside the hit area, and the short middle line
+     grows to meet its siblings - the mark locks before it opens. */
+  .hamburger {
+    --bk-size: 7px;
+    --bk-rest: 0px;
+    --bk-lock: 7px;
+    transition:
+      translate 0.3s var(--ease-out),
+      scale 0.15s var(--ease-out);
+  }
+
+  .hamburger:hover .hamburger-line--mid,
+  .hamburger:focus-visible .hamburger-line--mid {
+    width: 22px;
+  }
+
+  .hamburger:active {
+    scale: 0.92;
+    transition-duration: 0.3s, 0.06s;
+  }
+
   /* Full-screen, editorial: the menu the bar itself no longer shows.
      Portaled to <body> (see NavBar.tsx) rather than nested in <header>,
      because the scrolled header's own backdrop-filter creates a containing
@@ -421,8 +442,12 @@
   }
 
   /* A proper control, not a floating debug box: generous target, mono
-     label at a readable size, a hover state that actually responds. */
+     label at a readable size, and the same reticle-and-sweep response as
+     every other control, scaled down. */
   .lang-switch {
+    --bk-size: 6px;
+    --bk-rest: -6px;
+    --bk-lock: -2px;
     display: inline-flex;
     align-items: center;
     gap: 0.4em;
@@ -433,21 +458,36 @@
     letter-spacing: 0.04em;
     color: var(--fg-muted);
     border: 1px solid var(--rule);
+    background-image: linear-gradient(
+      color-mix(in srgb, var(--fg) 9%, transparent),
+      color-mix(in srgb, var(--fg) 9%, transparent)
+    );
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
     transition:
+      background-size 0.45s var(--ease-sweep),
       border-color 0.25s var(--ease-out),
       color 0.25s var(--ease-out),
-      background-color 0.25s var(--ease-out);
+      translate 0.3s var(--ease-out),
+      scale 0.15s var(--ease-out);
   }
 
   [dir="rtl"] .lang-switch {
     letter-spacing: 0;
+    background-position: right center;
   }
 
   .lang-switch:hover,
   .lang-switch:focus-visible {
+    background-size: 100% 100%;
     color: var(--fg);
     border-color: var(--fg-muted);
-    background: color-mix(in srgb, var(--fg) 6%, transparent);
+  }
+
+  .lang-switch:active {
+    scale: 0.96;
+    transition-duration: 0.45s, 0.25s, 0.25s, 0.3s, 0.06s;
   }
 
   /* ---- media ---- */
@@ -498,22 +538,6 @@
     padding-inline: var(--gutter);
   }
 
-  /* The chart recorder. Desktop: a gutter column holds the trace and the prose
-     sits beside it. Mobile: the gutter collapses and each section carries a
-     full-width horizontal strip of the same signal beneath its heading. */
-  .recorder {
-    display: grid;
-    gap: clamp(1.5rem, 1rem + 2vw, 3.5rem);
-    grid-template-columns: minmax(0, 1fr);
-  }
-
-  @media (min-width: 64rem) {
-    .recorder {
-      grid-template-columns: 13rem minmax(0, 1fr);
-      align-items: start;
-    }
-  }
-
   /* 32px mobile to 56px desktop. */
   .section-pad {
     padding-block: clamp(2rem, 1.443rem + 2.286vw, 3.5rem);
@@ -533,17 +557,30 @@
     position: absolute;
     inset-inline: 0;
     bottom: 0;
-    height: 80px;
+    height: 48px;
     pointer-events: none;
     z-index: 2;
   }
 
+  /* A soft haze toward the next ground, not a wash to it: the ramp stops well
+     short of full strength, so the boundary reads as atmosphere rather than a
+     dark band, and the eased midpoint keeps it from showing a visible edge. */
   section[data-ground="paper"].section-pad:has(+ section[data-ground="deep"])::after {
-    background: linear-gradient(to bottom, transparent, var(--deep));
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--deep) 6%, transparent) 55%,
+      color-mix(in srgb, var(--deep) 22%, transparent)
+    );
   }
 
   section[data-ground="deep"].section-pad:has(+ section[data-ground="paper"])::after {
-    background: linear-gradient(to bottom, transparent, var(--paper));
+    background: linear-gradient(
+      to bottom,
+      transparent,
+      color-mix(in srgb, var(--paper) 6%, transparent) 55%,
+      color-mix(in srgb, var(--paper) 22%, transparent)
+    );
   }
 
   /* Fan-fold perforation between two sections on the same ground. */
@@ -619,74 +656,142 @@
      sliding sweep at a near-invisible wash of the foreground colour, never
      amber and never opaque enough to read as the same mark as the primary. */
 
-  .cta-solid {
+  /* Instrument furniture shared by every control: four corner brackets that
+     sit loose around the control at rest and tighten onto it on hover and
+     keyboard focus, like a reticle locking on. They live on ::before so the
+     sweep fill (a background-size transition on the control itself) needs no
+     overflow clipping and can never be cut off. --bk sets their colour. */
+  .cta-solid,
+  .cta-quiet,
+  .lang-switch,
+  .hamburger {
+    --bk: var(--fg);
+    --bk-size: 9px;
+    --bk-rest: -8px;
+    --bk-lock: -3px;
     position: relative;
+    translate: var(--mx, 0px) var(--my, 0px);
+  }
+
+  .cta-solid::before,
+  .cta-quiet::before,
+  .lang-switch::before,
+  .hamburger::before {
+    content: "";
+    position: absolute;
+    inset: var(--bk-rest);
+    pointer-events: none;
+    opacity: 0;
+    background:
+      linear-gradient(var(--bk), var(--bk)) left top / var(--bk-size) 1px no-repeat,
+      linear-gradient(var(--bk), var(--bk)) left top / 1px var(--bk-size) no-repeat,
+      linear-gradient(var(--bk), var(--bk)) right top / var(--bk-size) 1px no-repeat,
+      linear-gradient(var(--bk), var(--bk)) right top / 1px var(--bk-size) no-repeat,
+      linear-gradient(var(--bk), var(--bk)) left bottom / var(--bk-size) 1px no-repeat,
+      linear-gradient(var(--bk), var(--bk)) left bottom / 1px var(--bk-size) no-repeat,
+      linear-gradient(var(--bk), var(--bk)) right bottom / var(--bk-size) 1px no-repeat,
+      linear-gradient(var(--bk), var(--bk)) right bottom / 1px var(--bk-size) no-repeat;
+    transition:
+      inset 0.4s var(--ease-sweep),
+      opacity 0.25s var(--ease-out);
+  }
+
+  .cta-solid:hover::before,
+  .cta-solid:focus-visible::before,
+  .cta-quiet:hover::before,
+  .cta-quiet:focus-visible::before,
+  .lang-switch:hover::before,
+  .lang-switch:focus-visible::before,
+  .hamburger:hover::before,
+  .hamburger:focus-visible::before {
+    inset: var(--bk-lock);
+    opacity: 1;
+  }
+
+  /* Primary: a reading crossing its threshold. At rest a stroke in-band, no
+     fill; on interaction amber sweeps in from the start edge and the label
+     inverts as the fill passes under it. The fill is the control's own
+     background growing, not a pseudo-element sliding, so it is exact in both
+     directions and never depends on overflow. */
+  .cta-solid {
+    --bk: var(--signal);
     display: inline-flex;
     align-items: center;
     justify-content: center;
     min-height: 3rem;
     padding-inline: 2rem;
-    background: transparent;
+    background-color: transparent;
+    background-image: linear-gradient(var(--signal), var(--signal));
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
     color: var(--signal);
     font-weight: 600;
     border: 1px solid var(--signal);
     border-radius: 0;
     cursor: pointer;
-    overflow: hidden;
-    transition: color 0.2s var(--ease-sweep) 0.15s;
+    transition:
+      background-size 0.5s var(--ease-sweep),
+      color 0.2s var(--ease-sweep) 0.15s,
+      translate 0.3s var(--ease-out),
+      scale 0.15s var(--ease-out);
   }
 
-  .cta-solid::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: var(--signal);
-    translate: -101% 0;
-    transition: translate 0.5s var(--ease-sweep);
-  }
-
-  [dir="rtl"] .cta-solid::before {
-    translate: 101% 0;
+  [dir="rtl"] .cta-solid {
+    background-position: right center;
   }
 
   .cta-solid:hover,
   .cta-solid:focus-visible {
+    background-size: 100% 100%;
     color: var(--deep);
   }
 
-  .cta-solid:hover::before,
-  .cta-solid:focus-visible::before {
-    translate: 0 0;
+  .cta-solid:active {
+    scale: 0.97;
+    transition-duration: 0.5s, 0.2s, 0.3s, 0.06s;
+  }
+
+  .cta-solid:focus-visible {
+    outline: 2px solid var(--fg);
+    outline-offset: 6px;
+  }
+
+  /* Pending or unavailable: the stroke goes dashed and the fill will not
+     take, so a disabled control can never read as a live one. */
+  .cta-solid:disabled,
+  .cta-solid:disabled:hover {
+    cursor: progress;
+    border-style: dashed;
+    background-size: 0% 100%;
+    color: var(--signal);
+    opacity: 0.6;
+    scale: 1;
+  }
+
+  .cta-solid:disabled::before {
+    opacity: 0;
   }
 
   /* Touch has no hover to depend on: the primary action reads as filled
      from the start, same as the hovered state on a pointer device. */
   @media (hover: none) {
     .cta-solid {
+      background-size: 100% 100%;
       color: var(--deep);
       transition: none;
     }
-    .cta-solid::before {
-      translate: 0 0;
+    .cta-solid:disabled {
+      background-size: 0% 100%;
+      color: var(--signal);
     }
   }
 
-  .cta-solid:disabled {
-    cursor: progress;
-    opacity: 0.7;
-  }
-
-  .cta-solid:focus-visible {
-    outline: 2px solid var(--fg);
-    outline-offset: 3px;
-  }
-
-  /* Secondary actions never take the signal colour, never fill with it —
-     the underline still grows, and a near-invisible wash of the foreground
-     colour slides in under it, calm and subordinate to the primary action. */
+  /* Secondary: same mechanism, deliberately quieter - a wash of the
+     foreground colour at a few percent, foreground brackets, and the thin
+     underline. Never the signal colour, never opaque enough to read as the
+     primary. */
   .cta-quiet {
-    position: relative;
     display: inline-flex;
     align-items: center;
     justify-content: center;
@@ -694,32 +799,26 @@
     padding-inline: 1.75rem;
     border: 1px solid var(--steel);
     color: var(--steel);
-    background: transparent;
+    background-color: transparent;
+    background-image: linear-gradient(
+      color-mix(in srgb, var(--fg) 7%, transparent),
+      color-mix(in srgb, var(--fg) 7%, transparent)
+    );
+    background-repeat: no-repeat;
+    background-position: left center;
+    background-size: 0% 100%;
     border-radius: 0;
     cursor: pointer;
-    overflow: hidden;
     transition:
+      background-size 0.5s var(--ease-sweep),
       border-color 0.25s var(--ease-out),
-      color 0.25s var(--ease-out);
+      color 0.25s var(--ease-out),
+      translate 0.3s var(--ease-out),
+      scale 0.15s var(--ease-out);
   }
 
-  .cta-quiet::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    background: rgba(234, 237, 236, 0.06);
-    translate: -101% 0;
-    transition: translate 0.5s var(--ease-sweep);
-  }
-
-  [dir="rtl"] .cta-quiet::before {
-    translate: 101% 0;
-  }
-
-  .cta-quiet:hover::before,
-  .cta-quiet:focus-visible::before {
-    translate: 0 0;
+  [dir="rtl"] .cta-quiet {
+    background-position: right center;
   }
 
   .cta-quiet::after {
@@ -735,6 +834,7 @@
 
   .cta-quiet:hover,
   .cta-quiet:focus-visible {
+    background-size: 100% 100%;
     border-color: var(--fg);
     color: var(--fg);
   }
@@ -744,9 +844,20 @@
     width: 100%;
   }
 
+  .cta-quiet:active {
+    scale: 0.97;
+    transition-duration: 0.5s, 0.25s, 0.25s, 0.3s, 0.06s;
+  }
+
   .cta-quiet:focus-visible {
     outline: 2px solid var(--fg);
-    outline-offset: 3px;
+    outline-offset: 6px;
+  }
+
+  .cta-quiet:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    border-style: dashed;
   }
 
   /* ---- the trace ---- */
@@ -826,6 +937,10 @@
 
     .js .trace-draw[data-orientation="horizontal"]:not(.is-drawn) {
       clip-path: inset(0 100% 0 0);
+    }
+
+    .js[dir="rtl"] .trace-draw[data-orientation="horizontal"]:not(.is-drawn) {
+      clip-path: inset(0 0 0 100%);
     }
 
     .js .trace-draw[data-orientation="vertical"]:not(.is-drawn) {

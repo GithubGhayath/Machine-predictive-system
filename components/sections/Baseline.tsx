@@ -1,9 +1,8 @@
 import SectionShell from "@/components/SectionShell";
+import TraceScope from "@/components/motion/TraceScope";
 import { getBaseline } from "@/lib/data";
-import { buildTrace, segmentStart } from "@/lib/trace";
+import { segmentStart } from "@/lib/trace";
 import type { Locale } from "@/lib/data/types";
-
-const BOX = { w: 1000, h: 120 };
 
 /**
  * Two machines of the same model, both healthy, each inside its own band. The
@@ -19,61 +18,21 @@ function MachinePair({ labels }: { labels: [string, string] }) {
 
   return (
     <div className="flex flex-col gap-8">
-      {machines.map((machine) => {
-        const geo = buildTrace({
-          t0: machine.t0,
-          span: 22,
-          width: BOX.w,
-          height: BOX.h,
-          deviation: 0,
-          amplitude: machine.amplitude,
-          band: machine.band,
-          samples: 260,
-        });
-
-        return (
-          <figure key={machine.label} data-reveal>
-            <figcaption className="mb-2 text-[0.95rem] text-fg-muted">
-              {machine.label}
-            </figcaption>
-            <svg
-              viewBox={`0 0 ${BOX.w} ${BOX.h}`}
-              preserveAspectRatio="none"
-              aria-hidden
-              className="trace-flow w-full h-[6rem] lg:h-[7rem]"
-            >
-              <rect
-                x={0}
-                y={geo.bandTop}
-                width={BOX.w}
-                height={geo.bandBottom - geo.bandTop}
-                fill="var(--corridor)"
-              />
-              {[geo.bandTop, geo.bandBottom].map((edge, i) => (
-                <line
-                  key={i}
-                  x1={0}
-                  y1={edge}
-                  x2={BOX.w}
-                  y2={edge}
-                  stroke="var(--rule)"
-                  strokeWidth={1}
-                  strokeDasharray="4 6"
-                  vectorEffect="non-scaling-stroke"
-                />
-              ))}
-              <path
-                d={geo.d}
-                fill="none"
-                stroke="var(--trace)"
-                strokeWidth={1.5}
-                strokeLinejoin="round"
-                vectorEffect="non-scaling-stroke"
-              />
-            </svg>
-          </figure>
-        );
-      })}
+      {machines.map((machine) => (
+        <figure key={machine.label} data-reveal>
+          <figcaption className="mb-2 text-[0.95rem] text-fg-muted">
+            {machine.label}
+          </figcaption>
+          <TraceScope
+            t0={machine.t0}
+            span={22}
+            amplitude={machine.amplitude}
+            band={machine.band}
+            unit="mm/s RMS"
+            heightClass="h-[6rem] lg:h-[7rem]"
+          />
+        </figure>
+      ))}
     </div>
   );
 }
@@ -87,7 +46,7 @@ export default async function Baseline({ locale }: { locale: Locale }) {
       id="baseline"
       index={7}
       ground="paper"
-      unit="mm/s RMS"
+      trace={false}
       fold
       heading={baseline.heading}
     >

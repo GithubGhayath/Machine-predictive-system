@@ -1,4 +1,5 @@
 import MediaClip from "@/components/media/MediaClip";
+import StillImage from "@/components/media/StillImage";
 import {
   CurrentDrawing,
   TemperatureDrawing,
@@ -37,6 +38,11 @@ export default async function Sensors({ locale }: { locale: Locale }) {
     >
       <div className="shell grid grid-cols-1 lg:grid-cols-12 gap-y-10 lg:gap-y-14">
         <MediaClip slot="sensors" variant="frame" className="lg:col-span-8 lg:row-start-2" />
+        <StillImage
+          src="/images/gears-macro.webp"
+          sizes="(min-width: 1024px) 30vw, 100vw"
+          className="aspect-[16/9] lg:aspect-auto lg:col-span-4 lg:row-start-2"
+        />
 
         {sensors.map((sensor) => (
           <article key={sensor.id} className={WIDTH[sensor.id]}>

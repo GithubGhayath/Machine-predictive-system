@@ -3,6 +3,7 @@ import { isLocale } from "@/content/site.config";
 import { getPreloaderContent } from "@/lib/data";
 import MotionProvider from "@/components/motion/MotionProvider";
 import Preloader from "@/components/motion/Preloader";
+import Magnetic from "@/components/chrome/Magnetic";
 import Header from "@/components/chrome/Header";
 import Footer from "@/components/chrome/Footer";
 import Hero from "@/components/sections/Hero";
@@ -30,6 +31,7 @@ export default async function Page({ params }: PageProps<"/[locale]">) {
   return (
     <>
       <Preloader locale={locale} loading={preloader?.loading ?? null} />
+      <Magnetic />
       <MotionProvider>
         <Header locale={locale} />
         <main id="main">

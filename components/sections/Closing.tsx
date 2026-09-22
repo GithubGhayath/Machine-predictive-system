@@ -1,5 +1,6 @@
 import MediaClip from "@/components/media/MediaClip";
 import SectionShell from "@/components/SectionShell";
+import StillImage from "@/components/media/StillImage";
 import ContactForm from "./ContactForm";
 import { getClosing, getContactForm } from "@/lib/data";
 import type { Locale } from "@/lib/data/types";
@@ -32,6 +33,13 @@ export default async function Closing({ locale }: { locale: Locale }) {
           <p data-reveal className="t-lead">
             {closing.body}
           </p>
+          <div data-reveal className="mt-10 hidden lg:block">
+            <StillImage
+              src="/images/hands-machine.webp"
+              sizes="(min-width: 1024px) 32vw, 100vw"
+              className="aspect-[4/3]"
+            />
+          </div>
           {form ? null : (
             <a data-reveal href={closing.cta.href} className="cta-solid mt-10">
               {closing.cta.label}

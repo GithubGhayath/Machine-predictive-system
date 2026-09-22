@@ -30,7 +30,7 @@
   },
   "hero": {
     "headline": "The machine warns you before it stops.",
-    "subline": "A monitoring system that learns the normal pulse of each machine on your line, then tells you when it changes — before the change becomes a stoppage.",
+    "subline": "RASD is a condition-monitoring system that learns the normal operating signature of every machine on your line, then alerts you when its behaviour begins to change — while there is still time to plan the repair instead of being caught by the stoppage.",
     "primaryCta": {
       "label": "Request a pilot installation",
       "href": "#contact"
@@ -48,63 +48,63 @@
   },
   "cost": {
     "id": "cost",
-    "heading": "A sudden failure costs more than the part.",
-    "body": "When a machine stops without warning, the whole shift stops with it. You pay idle labour, emergency freight on a part you could have ordered calmly, and a penalty on a late order. An emergency repair costs several times what the same repair costs when it is planned — and the only difference between the two is knowing early."
+    "heading": "An unplanned stop costs more than the part that failed.",
+    "body": "When a machine stops without warning, the damage does not end with the fault. The shift stops with it, and everything that depends on the shift: idle labour, spare parts on emergency freight, orders that miss their date. The same fault, caught early, is handled in scheduled downtime, with a part ordered calmly and a crew ready. The difference between the two outcomes is not the fault — it is when you learned about it."
   },
   "warningWindow": {
     "stages": [
       {
         "id": "day-zero",
-        "title": "Day zero — nothing unusual",
-        "body": "The machine runs inside its usual range. The system records and learns.",
+        "title": "Day zero — the machine in its normal state",
+        "body": "The machine runs inside its usual range. At this stage the system watches and learns its particular rhythm: how it vibrates, how it warms, how its current behaves in ordinary operation.",
         "deviation": 0,
         "ground": "paper"
       },
       {
         "id": "first-drift",
         "title": "First drift — nobody can hear it yet",
-        "body": "A hairline flaw in a bearing race begins to change the vibration signature. No heat, no noise, nothing a walk-around inspection would catch.",
+        "body": "A small mechanical flaw in a bearing begins to change the vibration signature slightly. No excess heat, no unusual noise, nothing a routine walk-around would catch. The system notices the difference because it knows what this machine looks like when it is healthy.",
         "deviation": 0.4,
         "ground": "paper"
       },
       {
         "id": "confirmed",
         "title": "The drift confirms — the alert goes out",
-        "body": "Vibration leaves the normal band repeatedly, and temperature begins to follow. When two indicators move together, the system sends an alert to the supervisor's phone.",
+        "body": "Readings outside the normal range keep recurring, and other channels begin to confirm them. At that point the system does more than notice a difference: it sends the supervisor an alert naming the machine and the indicator that changed.",
         "deviation": 1,
         "ground": "deep"
       },
       {
         "id": "never-happened",
         "title": "The stoppage that never happened",
-        "body": "The bearing was replaced during scheduled downtime. No lost shift, no emergency freight. That distance — between the first signal and the stop — is what this system sells.",
+        "body": "The affected part is replaced in the next scheduled maintenance stop. No lost shift, no emergency freight, no improvised decision in the middle of production. That is the value RASD delivers: the time between the first signal and the actual stop.",
         "deviation": 0.12,
         "ground": "paper"
       }
     ],
-    "closing": "In reliability engineering this distance is called the P‑F interval. Its length varies by fault, machine and measurement method — from days to months."
+    "closing": "In reliability engineering this interval is called the P‑F interval. Its length depends on the type of fault, the machine and its operating conditions; it can range from days to months."
   },
   "sensors": [
     {
       "id": "vibration",
       "name": "Vibration",
-      "body": "The most important early channel. A change in the vibration signature comes long before heat or audible noise, because a fault begins mechanically before it begins generating heat."
+      "body": "The earliest channel for detecting change. A fault begins mechanically, so its effect shows in a machine's vibration before it produces heat or noise anyone can hear. Following this channel is what gives your team a window in which to act."
     },
     {
       "id": "temperature",
       "name": "Temperature",
-      "body": "A confirming indicator, not an early one. Friction from a fault generates heat, but only once the fault has developed. Its real value is raising confidence when it rises alongside vibration."
+      "body": "An indicator that confirms what vibration has seen. Temperature rises as a fault develops and friction increases, so it arrives later than vibration — but it raises confidence in an alert when the two move together."
     },
     {
       "id": "current",
       "name": "Electrical current",
-      "body": "Catches what vibration cannot: electrical faults inside the motor itself. Each fault type shows up first in a different channel — which is why we measure all three."
+      "body": "Reveals what vibration cannot: faults that begin inside the electric motor itself. Each fault type shows up first in a different channel, which is why RASD reads all three together."
     }
   ],
   "baseline": {
-    "heading": "There is no single \"normal reading\" for all machines.",
-    "body": "Two machines of the same model, in the same plant, have different signatures — depending on mounting, foundation, load and age. So the system doesn't start from a generic threshold. It spends two to three weeks recording your machine while it is healthy, and builds that machine's own normal range from it. After that, every reading is measured against the machine itself, not against a general table.",
-    "callout": "One non-negotiable condition: the machine must be verified healthy before recording begins. A machine with an existing fault during baseline teaches the system that the fault is normal — an error that silently invalidates everything after it.",
+    "heading": "There is no single “normal” for all machines.",
+    "body": "Even two machines of the same model in the same plant do not behave alike; mounting, foundation, load and operating age leave a different signature on each. So RASD does not rely on a general table or a ready-made limit. It begins with a learning period on your machine while it is running healthy, builds a reference of its own from that, and measures every later reading against that reference alone.",
+    "callout": "One condition cannot be waived: the machine must be healthy when learning begins. The system learns the machine as it finds it — if it learns a faulty machine, it treats the fault as part of its character. That is why we verify its condition first.",
     "machineLabels": [
       "Machine A",
       "Machine B"
@@ -113,23 +113,23 @@
   "deliverables": [
     {
       "id": "alert",
-      "title": "An alert on the phone",
-      "body": "A direct message to the supervisor's phone naming the machine, which indicator drifted, and for how long — not a dashboard someone has to open to discover the problem."
+      "title": "An alert on the supervisor's phone",
+      "body": "A direct message naming the machine, the indicator that changed and since when, delivered to the person who can act on it. No dashboard someone has to open to discover the problem."
     },
     {
       "id": "record",
-      "title": "A record that accumulates",
-      "body": "Every reading is stored. After months you have a real history of each machine's behaviour — the foundation any later improvement in accuracy is built on."
+      "title": "A record that grows more valuable with time",
+      "body": "Each machine's readings are kept, so over the months you build a real history of how it behaves. That record helps your maintenance team understand its equipment, and becomes the foundation for any later improvement in alert accuracy."
     },
     {
       "id": "install",
-      "title": "Installation without modifying the machine",
-      "body": "Sensors mount externally. No cut wiring, no opened housings, no production stoppage during installation."
+      "title": "Installation without touching the machine",
+      "body": "Sensors mount externally — no cut wiring, no opened housings, no modification to the machine itself. Installation is scheduled around your production plan."
     }
   ],
   "limits": {
-    "heading": "What this system does not do.",
-    "body": "No predictive-maintenance system anywhere is 100% accurate — not this one, and not the ones sold for tens of thousands. The reason is mathematical, not commercial: any system with a decision threshold faces an unavoidable trade-off between false alarms and missed faults, and tightening one loosens the other. What we commit to instead of an impossible promise: telling you plainly, before any contract, what this system can and cannot detect on your specific machine, and what warning window to expect from it.",
+    "heading": "The limits of this system, stated plainly.",
+    "body": "No predictive-maintenance system detects every fault without a single false alarm. That is not a question of product quality but of the problem itself: any system that decides when to alert balances an alarm that was not needed against a fault that went unseen, and tightening one loosens the other. So we do not promise what cannot be delivered. We commit to telling you, before any agreement, what RASD can and cannot detect on your specific machine, and what an early warning is likely to look like on it.",
     "diagram": {
       "healthy": "Healthy",
       "faulty": "Faulty",
@@ -142,27 +142,27 @@
     {
       "step": 1,
       "title": "Visit and assess",
-      "body": "We inspect the line, identify the machines whose stoppage costs most, and agree on mounting points."
+      "body": "We visit the site, assess your lines, identify the machines whose stoppage costs you most, and agree the mounting points with you."
     },
     {
       "step": 2,
       "title": "Mount the sensors",
-      "body": "External installation on the selected machines, during a short pause or with no stoppage at all depending on the case."
+      "body": "Sensors are fitted externally on the selected machines, in a way that suits your production schedule."
     },
     {
       "step": 3,
-      "title": "Build the baseline",
-      "body": "Two to three weeks of continuous recording, during which the machine runs as usual."
+      "title": "The learning period",
+      "body": "The system records the machine in ordinary operation and builds its own reference, with no change to your daily work."
     },
     {
       "step": 4,
       "title": "Switch on alerting",
-      "body": "The system begins comparing and alerting, and we review the first month with you to tune sensitivity."
+      "body": "RASD begins comparing readings and sending alerts, and we review the first results with you to tune sensitivity to your plant."
     }
   ],
   "closing": {
     "heading": "Start with one machine.",
-    "body": "Pick the machine whose stoppage costs you most. Put the system on it. Judge us after three months.",
+    "body": "Pick the machine whose stoppage costs you most, put the system on it, and judge the result yourself after a real period of operation.",
     "cta": {
       "label": "Request a pilot installation",
       "href": "#contact"
@@ -212,7 +212,7 @@
     }
   },
   "footer": {
-    "description": "A low-cost monitoring system that detects a change in a machine's condition before it stops.",
+    "description": "RASD is a machine condition-monitoring system. It detects early change in a machine's behaviour so you can plan maintenance before a fault forces a stop.",
     "contactLabel": "Contact",
     "copyright": "All rights reserved."
   },
