@@ -342,12 +342,16 @@
     transform: translateY(-6.5px) rotate(-45deg);
   }
 
-  /* The reticle sits tight inside the hit area, and the short middle line
-     grows to meet its siblings - the mark locks before it opens. */
+  /* Same outside-in convention as every other control's reticle (rest sits
+     clear of the button, lock tightens toward — never past — its edge): a
+     positive --bk-lock here previously pulled the brackets inside the 44px
+     hit area, straight onto the icon's own strokes, worst of all right when
+     hovering the close X. The short middle line still grows to meet its
+     siblings, so the mark reads as locked before it opens. */
   .hamburger {
     --bk-size: 7px;
-    --bk-rest: 0px;
-    --bk-lock: 7px;
+    --bk-rest: -7px;
+    --bk-lock: -2px;
     transition:
       translate 0.3s var(--ease-out),
       scale 0.15s var(--ease-out);
